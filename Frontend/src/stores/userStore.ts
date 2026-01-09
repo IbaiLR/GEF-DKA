@@ -4,13 +4,15 @@ import { defineStore } from 'pinia';
 import axios from 'axios';
 
 export const useUserStore = defineStore('user', () => {
-  const user = ref(null);
+  const user = ref<any>(null);
   const loading = ref(false);
+  const initialized = ref(false);
   const error = ref('');
 
   async function getUser() {
     loading.value = true;
     error.value = '';
+
     try {
       const token = localStorage.getItem('token');
       if (!token) {
@@ -23,14 +25,15 @@ export const useUserStore = defineStore('user', () => {
       });
 
       user.value = res.data.user;
-    } catch (err: any) {
-      console.error(err);
+    } catch (err) {
       user.value = null;
       error.value = 'No se pudo cargar el usuario';
     } finally {
       loading.value = false;
+      initialized.value = true;
     }
   }
 
-  return { user, loading, error, getUser };
+  return { user, loading, initialized, error, getUser };
 });
+

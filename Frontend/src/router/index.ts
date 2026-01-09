@@ -21,25 +21,26 @@ const router = createRouter({
 
 router.beforeEach(async (to, from, next) => {
   const userStore = useUserStore()
-  userStore.getUser()
+  const token = localStorage.getItem('token')
 
-  if(!userStore.user && !userStore.loading){
-    await userStore.getUser();
+  if (token && !userStore.user && !userStore.loading) {
+    await userStore.getUser()
   }
 
-  const isAuthenticated = !!userStore.user
+  const isAuthenticated = !!token
 
   const publicPages = ['/']
   const authRequired = !publicPages.includes(to.path)
 
-  if (authRequired && !isAuthenticated){
+  if (authRequired && !isAuthenticated) {
     return next('/')
   }
 
-  if(to.path === '/' && isAuthenticated){
+  if (to.path === '/' && isAuthenticated) {
     return next('/home')
   }
 
   next()
 })
+
 export default router

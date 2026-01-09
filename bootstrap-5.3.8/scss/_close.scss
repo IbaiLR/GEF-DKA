@@ -34,7 +34,6 @@
 
   &:focus {
     outline: 0;
-    box-shadow: var(--#{$prefix}btn-close-focus-shadow);
     opacity: var(--#{$prefix}btn-close-focus-opacity);
   }
 
