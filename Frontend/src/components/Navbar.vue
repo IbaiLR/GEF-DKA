@@ -9,7 +9,7 @@
 
             <!-- Bienvenida (desktop, derecha) -->
             <span class="d-none d-lg-block ms-lg-auto me-3 fw-semibold">
-                ¡Bienvenid@, {{ usuario }}!
+                ¡Bienvenid@, {{ usuario.nombre }}!
             </span>
 
             <!-- Hamburguesa -->

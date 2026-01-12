@@ -43,6 +43,7 @@ const login = async () => {
       errorMessage.value = '';
       let token = response.data.token
       localStorage.setItem('token', token);
+      localStorage.setItem('user',response.data.user.id)
 
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
       router.push('/home');

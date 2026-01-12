@@ -8,10 +8,10 @@ use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
-    public function getUser(Request $req)
+    public function auth(Request $req)
     {
-        $user = $req->user();
-        if (!$user) {
+        $userAuth = $req->user();
+        if (!$userAuth) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'No autenticado'
@@ -21,8 +21,11 @@ class UserController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'Autenticado',
-            'user' => $user
+            'user' => $userAuth
         ]);
+    }
+    public function getUser($id){
+        return User::find($id);
     }
 
     public function login(Request $req)
@@ -40,6 +43,7 @@ class UserController extends Controller
         }
 
         $user = Auth::user();
+        $user->tokens()->delete();
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
@@ -51,7 +55,8 @@ class UserController extends Controller
 
     public function logout(Request $request)
     {
-        $request->user()->currentAccessToken()->delete;
+        $user = $request->user();
+        $user->tokens()->delete();
 
         return response()->json([
             'status' => 'success',
