@@ -3,8 +3,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import LoginView from '../views/LoginView.vue'
 import UsersView from '../views/UsersView.vue'
-import AlumnosView from '@/views/AlumnosView.vue'
-import AlumnosTutorView from '../views/tutor/AlumnosTutorView.vue'
+import AlumnosInstructorView from '@/views/instructor/AlumnosInstructorView.vue'
+import AlumnosTutorView from '@/views/tutor/AlumnosTutorView.vue'
 import SeguimientoView from '@/views/tutor/SeguimientoView.vue'
 import AsignarEmpresaView from '@/views/tutor/AsignarEmpresaView.vue'
 import EmpresaView from '../views/admin/EmpresaView.vue'
@@ -27,11 +27,16 @@ const router = createRouter({
       name: 'users',
       component: UsersView,
     },
-     {
-       path: '/alumnos',
-       name: 'alumnos',
-       component: AlumnosView
-     },
+    {
+      path: '/tutores/:id/alumnos',
+      name: 'alumnosTutor',
+      component: AlumnosTutorView 
+    },
+    {
+      path: '/instructores/:id/alumnos',
+      name: 'alumnosInstructor',
+      component:AlumnosInstructorView,
+    },
     {
       path: '/alumnosTutor/seguimiento',
       name: 'seguimientoAlumno',
@@ -43,6 +48,7 @@ const router = createRouter({
       name: 'asignarEmpresa',
       component: AsignarEmpresaView
     },
+    
     {
       path: '/empresa',
       name: 'empresa',

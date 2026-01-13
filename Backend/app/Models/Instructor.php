@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Instructor extends Model
 {
     protected $table = "instructor";
-    protected $primary="ID_Usuario";
+    protected $primaryKey="ID_Usuario";
 
     public function instructor(){
         return $this->belongsTo(User::class,"ID_Usuario","ID");

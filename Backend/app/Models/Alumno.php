@@ -17,6 +17,10 @@ class Alumno extends Model
         'ID_Instructor'
     ];
 
+    public function usuario(){
+        return $this->belongsTo(User::class, 'ID_Usuario');
+    }
+
     public function grado(){
         return $this->belongsTo(Grado::class, 'ID_Grado');
     }
