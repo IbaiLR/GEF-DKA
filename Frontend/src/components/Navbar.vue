@@ -56,7 +56,7 @@
                                         <RouterLink to="/users">Grados y Asignaturas</RouterLink>
                                     </a>
                                     <a class="dropdown-item">
-                                        <RouterLink to="/users">Empresas</RouterLink>
+                                        <RouterLink to="/empresa">Empresas</RouterLink>
                                     </a>
                                 </li>
                             </ul>
@@ -126,7 +126,7 @@ const userStore = useUserStore()
 
 let message = ref()
 let usuario = userStore.user
-
+let currentPath = 
 async function logout() {
     const token = localStorage.getItem('token')
     try {
