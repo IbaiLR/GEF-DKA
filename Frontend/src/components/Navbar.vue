@@ -150,27 +150,27 @@ import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { RouterLink } from "vue-router";
 const router = useRouter();
-const userStore = useUserStore();
+const userStore = useUserStore()
 
-let message = ref();
-let usuario = userStore.user;
-let currentPath = async function logout() {
-  const token = localStorage.getItem("token");
-  try {
-    const response = await axios.post(
-      "http://localhost:8000/api/logout",
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-    if (response.data.status === "success") {
-      localStorage.removeItem("token");
-      delete axios.defaults.headers.common["Authorization"];
-      userStore.user.value = null;
-      router.push("/");
+let message = ref()
+let usuario = userStore.user
+async function logout() {
+    const token = localStorage.getItem('token')
+    try {
+        const response = await axios.post('http://localhost:8000/api/logout', {}, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        if (response.data.status === 'success') {
+            localStorage.removeItem('token');
+            delete axios.defaults.headers.common['Authorization'];
+            userStore.user.value = null
+            router.push('/');
+        }
+    } catch (error) {
+        console.error(error);
+        message.value = 'Error cerrando sesión';
     }
   } catch (error) {
     console.error(error);
