@@ -1,7 +1,7 @@
 <template>
     <div class="col-md-3 mt-3">
         <ul v-if="empresas.length" class="list-group">
-            <button type="button" class="list-group-item list-group-item-action active" aria-current="true"
+            <button type="button" class="list-group-item list-group-item-action text-white bg-indigo" aria-current="true"
                 @click="emit('seleccionarEmpresa', null)">
                 <h3>Empresas</h3>
             </button>

@@ -6,7 +6,7 @@ defineProps({
 
 <template>
     <div class="card shadow-sm mt-3">
-        <div class="card-header bg-primary text-white">
+        <div class="card-header bg-indigo text-white">
             Información de {{ empresa.Nombre }}
         </div>
         <div class="card-body">

@@ -65,13 +65,27 @@ class UserController extends Controller
     }
 
     public function getUsers(Request $req)
-    {
-        $perPage = $req->get('per_page', 5); // Valor por defecto 10
-        $usuarios = User::orderBy('id')->paginate($perPage);
+        {
+            $perPage = $req->get('per_page', 5);
 
-        return response()->json([
-            'status' => 'success',
-            'data' => $usuarios
-        ]);
-    }
+            $query = User::query()->orderBy('id');
+
+            if ($req->filled('tipo')) {
+                $query->where('tipo', $req->tipo);
+            }
+
+            if ($req->filled('id_grado')) {
+                $query->whereHas('alumno', function ($q) use ($req) {
+                    $q->where('ID_Grado', $req->id_grado);
+                });
+            }
+
+            $usuarios = $query->paginate($perPage);
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $usuarios
+            ]);
+        }
+
 }

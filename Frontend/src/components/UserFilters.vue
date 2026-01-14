@@ -4,8 +4,8 @@
 
     const emit = defineEmits(["change"]);
 
-    const tipo = ref("");
-    const grado = ref("");
+    const tipo = ref("NONE");
+    const grado = ref("NONE");
     const grados = ref([]);
 
     async function cargarGrados() {
@@ -21,12 +21,14 @@
     cargarGrados();
     });
 
-    watch([tipo, grado], () => {
+    watch([tipo, grado], () => {      
     emit("change", {
-        tipo: tipo.value,
-        grado: tipo.value === "alumno" ? grado.value : null
+      tipo: tipo.value,
+      id_grado: grado.value
     });
-    });
+});
+
+
 </script>
 
 
@@ -39,7 +41,8 @@
       <div class="mb-3">
         <label class="form-label">Tipo de usuario</label>
         <select v-model="tipo" class="form-select">
-          <option value="">Selecciona un tipo</option>
+          <option value="NONE">Selecciona un tipo</option>
+          <option value=".">Todos</option>
           <option value="alumno">Alumno</option>
           <option value="tutor">Tutor</option>
           <option value="instructor">Instructor</option>
@@ -51,9 +54,10 @@
       <div v-if="tipo === 'alumno'" class="mb-3">
         <label class="form-label">Grado</label>
         <select v-model="grado" class="form-select">
-          <option value="">Selecciona un grado</option>
-          <option v-for="g in grados" :key="g" :value="g">
-            {{ g }}
+          <option value="NONE">Selecciona un grado</option>
+          <option value=".">Todos</option>
+          <option v-for="g in grados" :key="g" :value="g.id">
+            {{ g.nombre }}
           </option>
         </select>
       </div>
