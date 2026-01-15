@@ -76,7 +76,7 @@ class User extends Authenticatable
     }
 
     public function alumno(){
-        return $this->hasOne(Alumno::class,'ID_Usuario');
+        return $this->hasOne(Alumno::class,'ID_Usuario','id');
     }
     public function tutor(){
         return $this->hasOne(Tutor::class,'ID_Usuario');
