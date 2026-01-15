@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 class AlumnoEntregaController extends Controller
 {
-    public function entregarCuaderno(Request $request)
+    public function entregarCuaderno(Request $request, $id)
     {
         // Si recibes archivo PDF desde un form-data
         $urlCuaderno = $request->URL_Cuaderno;
@@ -20,7 +20,7 @@ class AlumnoEntregaController extends Controller
 
         return AlumnoEntrega::updateOrCreate(
             [
-                'ID_Alumno' => $request->ID_Alumno,
+                'ID_Alumno' => $id,
                 'ID_Entrega' => $request->ID_Entrega
             ],
             [
@@ -29,4 +29,18 @@ class AlumnoEntregaController extends Controller
             ]
         );
     }
+    public function descargarCuaderno($id)
+{
+    $entrega = AlumnoEntrega::findOrFail($id);
+
+    $path = str_replace(asset('storage/'), '', $entrega->URL_Cuaderno);
+    $fullPath = storage_path('app/public/' . $path);
+
+    if (!file_exists($fullPath)) {
+        return response()->json(['error' => 'Archivo no encontrado'], 404);
+    }
+
+    return response()->download($fullPath);
+}
+
 }

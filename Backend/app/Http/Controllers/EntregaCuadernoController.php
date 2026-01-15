@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Alumno;
 use App\Models\EntregaCuaderno;
 use Illuminate\Http\Request;
 
@@ -25,24 +26,31 @@ class EntregaCuadernoController extends Controller
         ->where('ID_Grado', $idGrado)
         ->get();
     }
-    public function entregasAlumno(Request $request)
-    {
-        $user = $request->user();
-        if (!$user) return response()->json([], 401);
 
-        $alumno = $user->alumno;
-        if (!$alumno) return response()->json([]);
+        public function entregasAlumno(Request $request, $id)
+        {
+            // Seguridad
+            if ($request->user()->id != $id) {
+                return response()->json(['message' => 'No autorizado'], 403);
+            }
 
-        $entregas = EntregaCuaderno::where('ID_Grado', $alumno->ID_Grado)
-            ->with(['alumnoEntrega' => function($q) use ($alumno) {
-                $q->where('ID_Alumno', $alumno->ID_Usuario)
-                ->with(['nota']);
-            }])
+            // Obtener grado del alumno
+            $idGrado = Alumno::where('ID_Usuario', $id)->value('ID_Grado');
+
+            if (!$idGrado) {
+                return response()->json([], 200);
+            }
+
+            // Entregas del grado + entrega del alumno (si existe)
+            $entregas = EntregaCuaderno::with([
+                'alumnoEntrega' => function ($q) use ($id) {
+                    $q->where('ID_Alumno', $id);
+                }
+            ])
+            ->where('ID_Grado', $idGrado)
             ->get();
 
-        $entregas->transform(fn($entrega) => tap($entrega, fn($e) => $e->alumnoEntrega = $e->alumnoEntrega ?? []));
-
-        return response()->json($entregas);
-    }
+            return response()->json($entregas);
+        }
 
 }

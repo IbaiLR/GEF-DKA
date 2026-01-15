@@ -31,12 +31,13 @@ Route::get('/empresa/{cif}/alumnos', [EstanciaController::class, 'getCompanyAlum
 
 //Cuaderno
 Route::get('/alumno/{id}', [AlumnoController::class, 'getGrado']);
-Route::middleware('auth:sanctum')->get('/alumno/entregas', [EntregaCuadernoController::class, 'entregasAlumno']);
+Route::get('/entregas/alumno/{id}', [EntregaCuadernoController::class, 'entregasAlumno'])->middleware('auth:sanctum');
 Route::post('/entregas', [EntregaCuadernoController::class, 'crearEntregaCuaderno']); // tutor
 Route::get('/grado/{id}/entregas', [EntregaCuadernoController::class, 'porGrado']);
-Route::post('/alumno/entregas', [AlumnoEntregaController::class, 'entregarCuaderno']);
+Route::post('/entregarCuaderno/alumno/{id}', [AlumnoEntregaController::class, 'entregarCuaderno']);
 Route::post('/nota-cuaderno', [NotaCuadernoController::class, 'notaCuaderno']);
 Route::get('/grados',[GradoController::class,'getGrados']);
+Route::get('/alumno/entregas/descargar/{id}', [AlumnoEntregaController::class, 'descargarCuaderno']);
 
 
 Route::get('/alumnos/{idAlumno}/notas', [NotasEmpresaController::class, 'show'])->middleware('auth:sanctum');

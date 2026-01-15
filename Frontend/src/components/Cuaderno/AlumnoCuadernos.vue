@@ -1,90 +1,111 @@
 <script setup>
-import { ref, onMounted } from 'vue';
-import axios from 'axios';
-import { useUserStore } from '@/stores/userStore';
+import { ref, onMounted } from 'vue'
+import axios from 'axios'
+import { useUserStore } from '@/stores/userStore'
 
-const userStore = useUserStore();
-const alumnoId = userStore.user?.id;
+const userStore = useUserStore()
+const alumnoId = userStore.user?.id
 
-const entregas = ref([]);
-const archivo = ref(null);
-const mensaje = ref('');
+const entregas = ref([])
+const archivos = ref({})
+const mensaje = ref('')
 
 async function fetchEntregas() {
+  const token = localStorage.getItem('token')
   try {
-    const res = await axios.get('http://localhost:8000/api/alumno/entregas', {
-      headers: { Authorization: `Bearer ${userStore.token}` }
-    });
-
-    const data = res.data;
-
-    // Asegurarse de que alumnoEntrega sea array
-    data.forEach(entrega => {
-      entrega.alumnoEntrega = entrega.alumnoEntrega || [];
-    });
-
-    entregas.value = data;
-
+    const res = await axios.get(
+      `http://localhost:8000/api/entregas/alumno/${alumnoId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    )
+    entregas.value = res.data
   } catch (err) {
-    console.error(err);
-    mensaje.value = 'Error al cargar las entregas';
+    console.error(err)
+    mensaje.value = 'Error al cargar las entregas'
   }
+}
+
+function cambioArchivo(e, entregaId) {
+  archivos.value[entregaId] = e.target.files[0]
 }
 
 async function subirPDF(entregaId) {
-  if (!archivo.value) return alert('Selecciona un archivo');
+  const file = archivos.value[entregaId]
+  if (!file) return alert('Selecciona un archivo')
 
-  const formData = new FormData();
-  formData.append('cuaderno', archivo.value);
-  formData.append('ID_Entrega', entregaId);
-  formData.append('ID_Alumno', alumnoId);
-
+  const formData = new FormData()
+  formData.append('cuaderno', file)
+  formData.append('ID_Entrega', entregaId)
   try {
-    await axios.post('http://localhost:8000/api/alumno/entrega', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-        Authorization: `Bearer ${userStore.token}`
+    await axios.post(
+      `http://localhost:8000/api/entregarCuaderno/alumno/${alumnoId}`,
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${userStore.token}`,
+          'Content-Type': 'multipart/form-data'
+        }
       }
-    });
-    alert('Archivo subido correctamente');
-    archivo.value = null;
-    fetchEntregas();
+    )
+
+    archivos.value[entregaId] = null
+    fetchEntregas()
   } catch (err) {
-    console.error(err);
-    alert('Error al subir el archivo');
+    console.error(err)
   }
 }
 
-function cambioArchivo(e) {
-  archivo.value = e.target.files[0];
-}
-
-onMounted(fetchEntregas);
+onMounted(fetchEntregas)
 </script>
+
+
 
 <template>
   <div>
     <h3>Mis Cuadernos</h3>
-    <div v-if="mensaje">{{ mensaje }}</div>
 
-    <div v-for="entrega in entregas" :key="entrega.id" class="mb-3 p-2 border rounded">
-      <strong>Entrega ID: {{ entrega.id }}</strong> | Fecha límite: {{ entrega.Fecha_Limite }}
+    <div v-if="mensaje" class="text-danger">
+      {{ mensaje }}
+    </div>
+
+    <div
+      v-for="entrega in entregas"
+      :key="entrega.id"
+      class="mb-3 p-2 border rounded"
+    >
+      <strong>Entrega ID: {{ entrega.id }}</strong>
+      | Fecha límite: {{ entrega.Fecha_Limite }}
 
       <div class="mt-2">
-        <template v-if="entrega.alumnoEntrega.length">
-          <a v-if="entrega.alumnoEntrega[0].URL_Cuaderno"
-             :href="entrega.alumnoEntrega[0].URL_Cuaderno"
-             target="_blank">
-            Ver PDF entregado
-          </a>
-          <span v-else>No entregado</span>
+        <template v-if="entrega.alumno_entrega?.length">
+          <span class="text-success">Entregado</span>
+          <a :href="`http://localhost:8000/api/alumno/entregas/descargar/${entrega.alumno_entrega[0].id}`" target="_blank">
+  Descargar PDF
+</a>
+
         </template>
-        <span v-else>No entregado</span>
+
+        <span v-else class="text-danger">
+          No entregado
+        </span>
       </div>
 
       <div class="mt-2">
-        <input type="file" accept="application/pdf" @change="cambioArchivo" />
-        <button @click="subirPDF(entrega.id)" class="btn btn-primary btn-sm">Subir PDF</button>
+        <input
+          type="file"
+          accept="application/pdf"
+          @change="e => cambioArchivo(e, entrega.id)"
+        />
+        <button
+          class="btn btn-primary btn-sm"
+          @click="subirPDF(entrega.id)"
+          :disabled="entrega.alumnoEntrega?.length"
+        >
+          Subir PDF
+        </button>
       </div>
     </div>
 
@@ -93,3 +114,5 @@ onMounted(fetchEntregas);
     </div>
   </div>
 </template>
+
+
