@@ -17,8 +17,8 @@ class Ra extends Model
         return $this-> belongsTo(Asignatura::class, 'ID_Asignatura');
     }
 
-    public function compRa(){
-        return $this->hasOne(compRa::class,"comp_ra","ID_Ra");
+    public function compRas(){
+        return $this->hasMany(compRa::class,"ID_Ra");
     }
 
 }

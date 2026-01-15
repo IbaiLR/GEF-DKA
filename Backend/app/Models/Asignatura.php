@@ -11,7 +11,7 @@ class Asignatura extends Model
     protected $table = 'asignatura';
 
     protected $fillable = [
-        'Nombre',
+        'nombre',
         'ID_Grado'
     ];
 
@@ -20,7 +20,7 @@ class Asignatura extends Model
     }
 
     public function ras(){
-        return $this -> hasMany(Ra::class, 'ID_Asignatura')
+        return $this -> hasMany(Ra::class, 'ID_Asignatura');
     }
     public function compsRa(){
         return $this -> hasMany(CompRa::class, 'ID_Grado');

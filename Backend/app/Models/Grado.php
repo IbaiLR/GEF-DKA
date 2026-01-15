@@ -17,4 +17,7 @@ class Grado extends Model
     public function tutor(){
         return $this->belongsTo(Tutor::class, 'ID_Tutor','ID_Usuario');
     }
+    public function asignaturas() {
+        return $this->hasMany(Asignatura::class, 'ID_Grado', 'id');
+    }
 }

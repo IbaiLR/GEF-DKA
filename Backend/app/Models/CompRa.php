@@ -8,11 +8,15 @@ class CompRa extends Model
 {
     protected $table="comp_ra";
 
+    protected $fillable = ['ID_Comp', 'ID_Ra', 'ID_Asignatura'];
 
-    public function competencia(){
-        $this->belongTo(Competencia::class,"ID_Comp");
+   public function competencia()
+    {
+        return $this->belongsTo(Competencia::class, "ID_Comp", "id");
     }
-    public function ra(){
-        $this->belongTo(Ra::class,"ID_Ra");
+
+    public function ra()
+    {
+        return $this->belongsTo(Ra::class, "ID_Ra", "id");
     }
 }

@@ -27,3 +27,21 @@ import Navbar from "@/components/Navbar.vue";
     />
   <!-- </div> -->
 </template>
+
+<!-- 
+<script setup>
+  import { useRoute } from "vue-router";
+  import Navbar from "@/components/Navbar.vue";
+  import NotasAlumno from "@/components/Alumno/NotasAlumno.vue";
+  
+  const route = useRoute();
+  const idAlumno = route.params.idAlumno; 
+  </script>
+  
+  <template>
+    <Navbar />
+    
+    <div class="container mt-4 mb-5">
+      <NotasAlumno :idAlumno="idAlumno" />
+    </div>
+  </template> -->
