@@ -21,3 +21,10 @@ Route::get('/instructores/{id}/alumnos', [AlumnoController::class, 'alumnosDeIns
 Route::get('/tutor/alumno/{id}/estancias', [EstanciaController::class, 'historialEstanciasAlumno']);// Tutor
 Route::get('/alumno/{id}/estancia', [EstanciaController::class, 'getEstanciaActual']);// Alumno
 Route::get('/empresa/{cif}/alumnos', [EstanciaController::class, 'getCompanyAlumnos']);
+
+//Cuaderno
+Route::post('/entregas', [EntregaCuadernoController::class, 'crearEntregaCuaderno']); // tutor
+Route::get('/grado/{id}/entregas', [EntregaCuadernoController::class, 'porGrado']);
+Route::post('/alumno/entrega', [AlumnoEntregaController::class, 'entregarCuaderno']);
+Route::post('/nota-cuaderno', [NotaCuadernoController::class, 'notaCuaderno']);
+
