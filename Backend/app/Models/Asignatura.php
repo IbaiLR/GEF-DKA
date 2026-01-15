@@ -12,13 +12,16 @@ class Asignatura extends Model
 
     protected $fillable = [
         'Nombre',
-        'ID_Tutor'
+        'ID_Grado'
     ];
 
     public function grado(){
         return $this-> belongsTo(Grado::class, 'ID_Grado');
     }
 
+    public function ras(){
+        return $this -> hasMany(Ra::class, 'ID_Asignatura')
+    }
     public function compsRa(){
         return $this -> hasMany(CompRa::class, 'ID_Grado');
     }

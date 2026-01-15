@@ -30,7 +30,6 @@ const q = ref("");
 let searchTimeout = null;
 function onSearch(texto) {
   q.value = (texto || "").trim();
-  fetchAlumnos(1); // al buscar, volvemos a página 1
 }
 watch(q, () => {
   if (searchTimeout) {
@@ -95,10 +94,10 @@ onMounted(() => fetchAlumnos(1));
             <td>{{ a.Email }}</td>
             <td>{{ a.Grado }}</td>
             <td>
+
+            <!-- ==== VISTA DE TUTORES ==== -->
               <span v-if="isTutorView">
-                <!-- Hay que coger de la bd si un alumno tiene estancia
-     SI TIENE ESTANCIA: Ver seguimiento/ borrar estancia
-     SI NO TIENE ESTANCIA: Asignar Estancia-->
+                
                 <button
                   v-if="a.Tiene_estancia"
                   class="btn btn-sm btn-primary me-2"
@@ -122,6 +121,7 @@ onMounted(() => fetchAlumnos(1));
                 </button>
               </span>
 
+              <!-- ==== VISTA DE INSTRUCTORES -->
               <span v-else-if="isInstructorView">
                 <!-- TIENE ESTANCIA -->
                 <RouterLink

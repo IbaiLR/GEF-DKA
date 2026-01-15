@@ -10,9 +10,9 @@ class RaSeeder extends Seeder
     public function run(): void
     {
         DB::table('ra')->insert([
-            ['id'=>1,'descripcion'=>'Documenta correctamente el trabajo realizado'],
-            ['id'=>2,'descripcion'=>'Aplica buenas prácticas de desarrollo'],
-            ['id'=>3,'descripcion'=>'Gestiona incidencias de forma autónoma'],
+            ['id'=>1,'descripcion'=>'Documenta correctamente el trabajo realizado', 'ID_Asignatura'=>1],
+            ['id'=>2,'descripcion'=>'Aplica buenas prácticas de desarrollo','ID_Asignatura'=>1],
+            ['id'=>3,'descripcion'=>'Gestiona incidencias de forma autónoma', 'ID_Asignatura'=>2],
         ]);
     }
 }
