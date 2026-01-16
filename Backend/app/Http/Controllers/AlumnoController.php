@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\NotaCuaderno;
 use App\Models\Alumno;
 use Illuminate\Http\Request;
 
@@ -94,6 +95,32 @@ class AlumnoController extends Controller
     public function getGrado($id)
     {
         return Alumno::with('grado')->findOrFail($id);
+    }
+
+    public function misNotas($id)
+    {
+        
+
+        if (!$id) {
+            return response()->json([
+                'alumno' => null,
+                'cuadernos' => [],
+                'competencias' => [],
+                'transversales' => [],
+                'egibide' => [],
+            ]);
+        }
+
+        $alumno = Alumno::with([
+            'usuario:id,nombre,apellidos',
+            'grado:id,nombre',
+            'notasCompetencias.competencia',
+            'notasTransversales.transversal',
+            'notasEgibide.asignatura',
+            'entregas.alumnoEntrega.nota'
+        ])->where('ID_Usuario',$id)->get();
+
+        return response()->json($alumno);
     }
 
 }

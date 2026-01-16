@@ -47,6 +47,26 @@ Route::post('/empresa/instructor/create', [InstructorController::class, 'crearIn
 */
 Route::get('/tutores/{id}/alumnos', [AlumnoController::class, 'alumnosDeTutor']);
 Route::get('/instructores/{id}/alumnos', [AlumnoController::class, 'alumnosDeInstructor']);
+
+Route::get('/tutor/alumno/{id}/estancias', [EstanciaController::class, 'historialEstanciasAlumno']);// Tutor
+Route::get('/alumno/{id}/estancia', [EstanciaController::class, 'getEstanciaActual']);// Alumno
+Route::get('/empresa/{cif}/alumnos', [EstanciaController::class, 'getCompanyAlumnos']);
+
+
+//Cuaderno
+Route::get('/alumno/{id}', [AlumnoController::class, 'getGrado']);
+Route::get('/entregas/alumno/{id}', [EntregaCuadernoController::class, 'entregasAlumno'])->middleware('auth:sanctum');
+Route::post('/entregas', [EntregaCuadernoController::class, 'crearEntregaCuaderno']); // tutor
+Route::get('/grado/{id}/entregas', [EntregaCuadernoController::class, 'porGrado']);
+Route::post('/entregarCuaderno/alumno/{id}', [AlumnoEntregaController::class, 'entregarCuaderno']);
+Route::post('/nota-cuaderno', [NotaCuadernoController::class, 'notaCuaderno']);
+Route::get('/grados',[GradoController::class,'getGrados']);
+Route::get('/alumno/entregas/descargar/{id}', [AlumnoEntregaController::class, 'descargarCuaderno']);
+
+
+Route::get('/alumnos/{idAlumno}/notas', [NotasEmpresaController::class, 'misNotas'])->middleware('auth:sanctum');
+Route::post('/alumnos/{idAlumno}/notas', [NotasEmpresaController::class, 'store'])->middleware('auth:sanctum');
+
 Route::get('/tutor/{id}/grados', [TutorController::class, 'grados']);
 
 /*
@@ -65,6 +85,7 @@ Route::get('/empresa/{cif}/alumnos', [EstanciaController::class, 'getCompanyAlum
 | Cuadernos y Entregas
 |--------------------------------------------------------------------------
 */
+
 // Obtener grado del alumno
 Route::get('/alumno/{id}', [AlumnoController::class, 'getGrado']);
 // Entregas de un alumno
@@ -83,6 +104,8 @@ Route::get('/alumno/entregas/descargar/{id}', [AlumnoEntregaController::class, '
 | Notas
 |--------------------------------------------------------------------------
 */
+// Notas de alumno
+Route::get('/alumno/{id}/mis-notas', [AlumnoController::class, 'misNotas']);
 Route::post('/nota-cuaderno', [NotaCuadernoController::class, 'notaCuaderno']);
 // Notas por alumno (empresa)
 Route::get('/alumnos/{idAlumno}/notas', [NotasEmpresaController::class, 'show'])->middleware('auth:sanctum');

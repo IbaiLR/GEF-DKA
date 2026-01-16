@@ -1948,6 +1948,20 @@ progress {
   border-color: var(--bs-table-border-color);
 }
 
+.table-indigo {
+  --bs-table-color: #fff;
+  --bs-table-bg: #811C5E;
+  --bs-table-border-color: rgb(154.2, 73.4, 126.2);
+  --bs-table-striped-bg: rgb(135.3, 39.35, 102.05);
+  --bs-table-striped-color: #fff;
+  --bs-table-active-bg: rgb(141.6, 50.7, 110.1);
+  --bs-table-active-color: #fff;
+  --bs-table-hover-bg: rgb(138.45, 45.025, 106.075);
+  --bs-table-hover-color: #fff;
+  color: var(--bs-table-color);
+  border-color: var(--bs-table-border-color);
+}
+
 .table-secondary {
   --bs-table-color: #000;
   --bs-table-bg: rgb(225.6, 227.4, 229);

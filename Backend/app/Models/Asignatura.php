@@ -29,4 +29,7 @@ class Asignatura extends Model
     public function notaEgibide(){
         return $this -> hasOne(NotaEgibide::class, 'ID_Asignatura');
     }
+    public function alumnos(){
+        return $this->belongsToMany(Alumno::class, 'nota_egibide','ID_Alumno', 'id');
+    }
 }

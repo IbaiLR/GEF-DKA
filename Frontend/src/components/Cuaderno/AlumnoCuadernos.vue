@@ -136,7 +136,7 @@ onMounted(fetchEntregas)
               <a
   :href="`http://localhost:8000/api/alumno/entregas/descargar/${entrega.alumno_entrega[entrega.alumno_entrega.length - 1].id}`"
   target="_blank"
-  class="btn btn-outline-success btn-sm"
+  class="btn btn-outline-indigo btn-sm"
 >
   <i class="bi bi-download"></i> Descargar última entrega
 </a>

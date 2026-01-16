@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Transversal extends Model
 {
-    protected $table = "transversal";
+    protected $table = "transversales";
     protected $fillable = [
         'Descripcion'
     ];

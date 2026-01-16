@@ -119,9 +119,15 @@
             </li>
             
              <li class="nav-item" v-if="usuario.tipo === 'alumno'">
-              <RouterLink class="nav-link" to="/cuadernos-alumno">Mis Cuadernos</RouterLink>
+              <RouterLink class="nav-link" to="/cuadernos-alumno">
+                Mis Cuadernos
+              </RouterLink>
             </li>
-
+            <li>
+              <RouterLink class="nav-link" to="/alumno/mis-notas">
+                Mis notas
+              </RouterLink>
+            </li>
             <li class="nav-item">
               <a class="nav-link text-danger" role="button" @click="logout">
                 Cerrar sesión
