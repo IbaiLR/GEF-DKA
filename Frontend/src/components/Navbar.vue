@@ -61,13 +61,10 @@
                     <RouterLink to="/users">Usuarios</RouterLink>
                   </a>
                   <a class="dropdown-item">
-                    <RouterLink to="/users">Competencias</RouterLink>
+                    <RouterLink to="/users">Competencias y RAs</RouterLink>
                   </a>
                   <a class="dropdown-item">
-                    <RouterLink to="/users">RAs</RouterLink>
-                  </a>
-                  <a class="dropdown-item">
-                    <RouterLink to="/users">Grados y Asignaturas</RouterLink>
+                    <RouterLink to="/grados">Grados y Asignaturas</RouterLink>
                   </a>
                   <a class="dropdown-item">
                     <RouterLink to="/empresa">Empresas</RouterLink>
