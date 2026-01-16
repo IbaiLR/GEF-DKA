@@ -21,4 +21,7 @@ class EntregaCuaderno extends Model
     public function grado (){
         return $this->belongsTo(Grado::class, 'ID_Grado');
     }
+
+    
+
 }
