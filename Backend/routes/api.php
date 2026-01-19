@@ -123,4 +123,4 @@ Route::get('/grados/{id}/competencias', [GradoController::class, 'getCompetencia
 Route::get('/tutor/{id}/notas-cuaderno', [NotaCuadernoController::class, 'notasPorTutor']);
 
 
-Route::get('/matriz-competencias', [MatrizController::class, 'index']);
+Route::get('/grado/{id}/matriz-competencias/', [MatrizController::class, 'getCompRa']);

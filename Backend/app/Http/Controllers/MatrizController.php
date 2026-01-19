@@ -9,19 +9,26 @@ use Illuminate\Http\Request;
 
 class MatrizController extends Controller
 {
-    public function index()
-    {
-        // 1. Cargamos todas las competencias (columnas de la tabla)
-        $competencias = Competencia::all();
+    public function getCompRa($gradoId)
+{
+    // Competencias del grado
+    $competencias = Competencia::orderBy('id')
+        ->get();
 
-        // 2. Cargamos las asignaturas con sus RAs y, dentro de cada RA, la relación 'compRas'
-        //    Usamos 'ras.compRas' porque así llamaste a las funciones en tus modelos.
-        $asignaturas = Asignatura::with(['ras.compRas'])
-                        ->get();
+    // Asignaturas del grado con RAs y competencias
+    $asignaturas = Asignatura::where('ID_Grado', $gradoId)
+        ->with([
+            'ras.compRas' => function ($q) {
+                $q->select('ID_Ra', 'ID_Comp');
+            }
+        ])
+        ->orderBy('nombre')
+        ->get();
 
-        return response()->json([
-            'competencias' => $competencias,
-            'asignaturas' => $asignaturas
-        ]);
-    }
+    return response()->json([
+        'competencias' => $competencias,
+        'asignaturas' => $asignaturas
+    ]);
+}
+
 }
