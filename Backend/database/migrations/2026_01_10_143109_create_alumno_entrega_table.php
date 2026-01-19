@@ -13,6 +13,7 @@ return new class extends Migration {
             $table->unsignedBigInteger('ID_Alumno');
             $table->unsignedBigInteger('ID_Entrega');
                         $table->timestamps();
+            $table->text('Observaciones')->nullable(true);
 
             $table->foreign('ID_Alumno')
                 ->references('id_usuario')->on('alumno')

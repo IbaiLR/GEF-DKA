@@ -1,5 +1,6 @@
 <script setup>
-import TutorCuadernos from '@/components/Cuaderno/TutorCuadernos.vue';
+import CuadernosObservaciones from '@/components/Cuaderno/CuadernosObservaciones.vue'
+import NotasCuaderno from './NotasCuaderno.vue';
 import Navbar from '../../components/Navbar.vue';
 
 </script>
@@ -7,7 +8,7 @@ import Navbar from '../../components/Navbar.vue';
 <template>
   <Navbar></Navbar>
   <div class="container mt-4">
-    <h2>Cuadernos de mis alumnos</h2>
-    <TutorCuadernos />
+    <CuadernosObservaciones />
+    <NotasCuaderno />
   </div>
 </template>

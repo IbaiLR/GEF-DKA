@@ -67,12 +67,13 @@ class Alumno extends Model
         );
     }
 
-
-
     public function notasEgibide()
     {
         return $this->hasMany(NotaEgibide::class, 'ID_Alumno', 'ID_Usuario');
     }
 
+    public function notaCuaderno(){
+        return $this->hasOne(NotaCuaderno::class,'ID_Alumno','ID_Usuario');
+    }
 
 }

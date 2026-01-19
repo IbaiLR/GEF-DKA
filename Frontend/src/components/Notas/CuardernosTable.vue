@@ -21,7 +21,7 @@ const pendientes = computed(
 
 <template>
   <div class="mb-5">
-    <h5>📝 Cuadernos</h5>
+    <h5>Cuadernos</h5>
     <p>
       Total: {{ total }} |
       Corregidos: {{ corregidos }} |

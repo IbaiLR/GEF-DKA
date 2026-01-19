@@ -21,7 +21,6 @@ class EntregaCuadernoController extends Controller
     {
         return EntregaCuaderno::with([
             'alumnoEntrega.alumno.usuario',
-            'alumnoEntrega.nota'
         ])
             ->where('ID_Grado', $idGrado)
             ->get();

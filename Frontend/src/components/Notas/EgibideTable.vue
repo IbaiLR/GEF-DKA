@@ -6,7 +6,7 @@ const props = defineProps({
 
 <template>
 <div class="mb-5">
-  <h5>🏫 Asignaturas (Egibide)</h5>
+  <h5>Asignaturas (Egibide)</h5>
   <div class="table-responsive">
     <table class="table table-striped table-bordered">
       <thead class="table-indigo text-white text-center text-md-start">

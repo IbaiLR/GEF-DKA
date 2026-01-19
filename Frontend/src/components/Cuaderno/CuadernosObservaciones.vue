@@ -27,20 +27,20 @@ async function fetchEntregas() {
       entregas.value.push(...resResponse.data)
 
     }
+    console.log(entregas.value);
   } catch (err) {
     console.error(err)
     mensaje.value = 'Error cargando entregas'
   }
 }
 
-async function guardarNota(alumnoEntrega) {    
+async function guardarObservacion(alumnoEntrega) {
   try {
-    const res = await axios.post('http://localhost:8000/api/nota-cuaderno', {
+    const res = await axios.post('http://localhost:8000/api/observacionesCuadernoAlumno', {
       ID_Cuaderno: alumnoEntrega.id,
-      Nota: Number(alumnoEntrega.nota?.Nota ?? 0),
-      ID_Tutor: alumnoEntrega.alumno.ID_Tutor
+      Observaciones: alumnoEntrega.Observaciones,
     })
-    
+
   } catch (err) {
     console.error(err)
     alert('Error al guardar la nota')
@@ -86,8 +86,8 @@ onMounted(fetchEntregas)
               <thead class="table-light">
                 <tr>
                   <th>Alumno</th>
-                  <th>PDF</th>
-                  <th class="text-center">Nota</th>
+                  <th class="text-center">PDF</th>
+                  <th class="text-center">Observaciones</th>
                 </tr>
               </thead>
 
@@ -110,10 +110,10 @@ onMounted(fetchEntregas)
 
                   <td class="text-center">
                     <div class="d-flex justify-content-center gap-2">
-                      <input type="number" min="0" max="10" class="form-control form-control-sm w-50"
-                        :value="alumnoEntrega.nota?.Nota ?? ''"
-                        @input="alumnoEntrega.nota = { Nota: $event.target.value }" />
-                      <button @click="guardarNota(alumnoEntrega)" class="btn btn-outline-secondary btn-sm">
+                      <textarea class="form-control" :value="alumnoEntrega.Observaciones ?? ''"
+                        @input="alumnoEntrega.Observaciones = $event.target.value">
+                      </textarea>
+                      <button @click="guardarObservacion(alumnoEntrega)" class="btn btn-outline-secondary btn-sm">
                         Guardar
                       </button>
                     </div>
@@ -135,5 +135,6 @@ onMounted(fetchEntregas)
     <div v-else class="text-center text-muted mt-3">
       No hay entregas asignadas para tus grados.
     </div>
+
   </div>
 </template>

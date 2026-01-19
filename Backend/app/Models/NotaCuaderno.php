@@ -9,14 +9,13 @@ class NotaCuaderno extends Model
     protected $table = 'notas_cuaderno';
 
     protected $fillable = [
-        'ID_Cuaderno',
-        'ID_Tutor',
+        'ID_Alumno',
         'Fecha',
         'Nota'
     ];
 
-    public function cuaderno()
+    public function alumno()
     {
-        return $this->belongsTo(AlumnoEntrega::class, 'ID_Cuaderno');
+        return $this->belongsTo(Alumno::class, 'ID_Usuario','ID_Alumno');
     }
 }

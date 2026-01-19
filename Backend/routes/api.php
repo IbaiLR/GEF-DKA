@@ -60,6 +60,7 @@ Route::post('/entregas', [EntregaCuadernoController::class, 'crearEntregaCuadern
 Route::get('/grado/{id}/entregas', [EntregaCuadernoController::class, 'porGrado']);
 Route::post('/entregarCuaderno/alumno/{id}', [AlumnoEntregaController::class, 'entregarCuaderno']);
 Route::post('/nota-cuaderno', [NotaCuadernoController::class, 'notaCuaderno']);
+Route::post('/observacionesCuadernoAlumno', [NotaCuadernoController::class, 'observacionesCuadernoAlumno']);
 Route::get('/grados',[GradoController::class,'getGrados']);
 Route::get('/alumno/entregas/descargar/{id}', [AlumnoEntregaController::class, 'descargarCuaderno']);
 
@@ -116,3 +117,4 @@ Route::post('/alumnos/{idAlumno}/notas', [NotasEmpresaController::class, 'store'
 |--------------------------------------------------------------------------
 */
 Route::get('/grados', [GradoController::class, 'getGrados']);
+Route::get('/tutor/{id}/notas-cuaderno', [NotaCuadernoController::class, 'notasPorTutor']);

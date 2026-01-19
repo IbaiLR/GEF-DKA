@@ -21,7 +21,7 @@ async function cargarNotas() {
     })
     notas.value = res.data || null
     console.log(notas.value);
-    
+
   } catch (err) {
     console.error(err)
     mensaje.value = 'Error al cargar las notas'
@@ -33,7 +33,7 @@ onMounted(cargarNotas)
 
 <<template>
   <div class="container mt-4">
-    <h3 class="mb-4 text-center text-md-start">📚 Mis Notas</h3>
+    <h3 class="mb-4 text-center text-md-start">Mis Notas</h3>
 
     <div v-if="mensaje" class="alert alert-danger">{{ mensaje }}</div>
 
