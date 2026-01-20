@@ -11,10 +11,8 @@ const props = defineProps({
   }
 })
 
-// Lista de seguimientos
+// Datos y modales
 const seguimientos = ref([])
-
-// Modales
 const crearModalVisible = ref(false)
 const editarModalVisible = ref(false)
 const editing = ref(null)
@@ -35,21 +33,18 @@ async function cargarSeguimientos() {
   }
 }
 
-
 // Abrir modales
 function abrirCrearModal() {
   crearModalVisible.value = true
 }
 
 function abrirEditarModal(s) {
-  editing.value = {
-    id: s.id,
-    Fecha: s.Fecha,
-    Hora: s.Hora,
-    Accion_seguimiento: s.Accion_seguimiento,
-    Seguimiento_actividad: s.Seguimiento_actividad
-  }
+  editing.value = { ...s } // copiar objeto completo
   editarModalVisible.value = true
+}
+
+function abrirEliminarModal(){
+
 }
 
 // Guardar seguimiento (crear)
@@ -71,13 +66,11 @@ async function guardarNuevoSeguimiento(data) {
 
 // Guardar seguimiento (editar)
 async function guardarEdicionSeguimiento(data) {
-  console.log(data);
-  
-  const token = localStorage.getItem('token')
   if (!data.id) {
     alert('No se puede editar: falta ID')
     return
   }
+  const token = localStorage.getItem('token')
   try {
     const res = await axios.put(
       `http://localhost:8000/api/seguimiento/${data.id}`,
@@ -96,7 +89,6 @@ async function guardarEdicionSeguimiento(data) {
 
 // Eliminar seguimiento
 async function eliminarSeguimiento(id) {
-  
   if (!id) {
     alert('No se puede eliminar: falta ID')
     return
@@ -104,18 +96,17 @@ async function eliminarSeguimiento(id) {
 
   const token = localStorage.getItem('token')
   try {
-    const res = await axios.delete(`http://localhost:8000/api/seguimiento/${id}`, 
+    const res = await axios.delete(`http://localhost:8000/api/seguimiento/${id}`,
       { headers: { Authorization: `Bearer ${token}` } }
     )
     seguimientos.value = seguimientos.value.filter(s => (s.id) !== id)
     console.log(res.data);
-    
+
   } catch (err) {
     console.error(err)
     alert('Error al eliminar seguimiento')
   }
 }
-
 
 onMounted(cargarSeguimientos)
 watch(() => props.estanciaId, cargarSeguimientos)
@@ -123,21 +114,22 @@ watch(() => props.estanciaId, cargarSeguimientos)
 
 <template>
 <div class="container mt-4">
-  <h3>Seguimiento</h3>
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h3>Seguimientos de mis alumnos</h3>
+    <button class="btn btn-secondary" @click="abrirCrearModal">
+      <i class="bi bi-plus-lg"></i> Nuevo seguimiento
+    </button>
+  </div>
 
-  <button class="btn btn-primary mb-3" @click="abrirCrearModal">
-    Crear nuevo seguimiento
-  </button>
-
-  <div v-if="seguimientos.length">
-    <table class="table table-bordered">
-      <thead>
+  <div v-if="seguimientos.length" class="table-responsive shadow-sm rounded">
+    <table class="table table-striped table-hover align-middle">
+      <thead class="table-indigo">
         <tr>
           <th>Fecha</th>
           <th>Hora</th>
           <th>Acción</th>
           <th>Actividad</th>
-          <th></th>
+          <th class="text-center">Opciones</th>
         </tr>
       </thead>
       <tbody>
@@ -148,16 +140,17 @@ watch(() => props.estanciaId, cargarSeguimientos)
           <td>{{ s.Seguimiento_actividad }}</td>
           <td>
             <button class="btn btn-sm btn-warning" @click="abrirEditarModal(s)">Editar</button>
-            <button class="btn btn-sm btn-danger" 
+            <button class="btn btn-sm btn-danger"
                     @click="eliminarSeguimiento(s.id)">Eliminar</button>
           </td>
         </tr>
-
       </tbody>
     </table>
   </div>
 
-  <p v-else class="text-muted">No hay seguimientos</p>
+  <p v-else class="text-muted text-center py-3">
+    No hay seguimientos
+  </p>
 
   <!-- Modales -->
   <CrearSeguimientoModal

@@ -15,7 +15,7 @@
     </div>
 
     <div v-if="asignaturas.length" class="table-responsive">
-      <table class="table table-bordered table-hover text-center align-middle mb-0">
+      <table class="table table-bordered text-center align-middle mb-0">
 
         <thead class="table-indigo">
           <tr>
@@ -25,7 +25,7 @@
           </tr>
           <tr>
             <th v-for="comp in competencias" :key="comp.id">
-              C{{ comp.id }}<br>{{ comp.descripcion }}
+              {{ comp.descripcion }}
             </th>
           </tr>
         </thead>
@@ -41,9 +41,25 @@
                 <br>{{ ra.Descripcion }}
               </td>
 
-              <td v-for="comp in competencias" :key="comp.id">
-                {{ tieneCompetencia(ra, comp.id) ? '✓' : '—' }}
+              <td v-for="comp in competencias" :key="comp.id" class="cell-icon"
+                @click="!ra.loading && toggleCompRa(asignatura, ra, comp)" @mouseenter="ra.hoverCompId = comp.id"
+                @mouseleave="ra.hoverCompId = null">
+
+                <!-- Loading -->
+                <span v-if="ra.loading && ra.loadingCompId === comp.id"
+                  class="spinner-border spinner-border-sm text-purple"></span>
+
+                <!-- Hover dinámico -->
+                <span v-else-if="ra.hoverCompId === comp.id">
+                  {{ tieneCompetencia(ra, comp.id) ? '✕' : '✓' }}
+                </span>
+
+                <!-- Estado normal -->
+                <span v-else-if="tieneCompetencia(ra, comp.id)">
+                  ✓
+                </span>
               </td>
+
             </tr>
           </template>
         </tbody>
@@ -55,15 +71,16 @@
 </template>
 
 <script setup>
-  import { ref, onMounted } from 'vue'
-  import axios from 'axios'
+import { ref, onMounted } from 'vue'
+import axios from 'axios'
 
-  const grados = ref([])
-  const gradoSeleccionado = ref('')
-  const competencias = ref([])
-  const asignaturas = ref([])
+const grados = ref([])
+const gradoSeleccionado = ref('')
+const competencias = ref([])
+const asignaturas = ref([])
 
- // Función corregida y segura
+
+
 const tieneCompetencia = (ra, id) => {
     // 1. Si el RA no existe o no tiene la propiedad comp_ras, devolvemos false
     if (!ra || !ra.comp_ras) return false;
@@ -75,18 +92,82 @@ const tieneCompetencia = (ra, id) => {
     return ra.comp_ras.some(c => c.ID_Comp === id);
 }
 
-  const cargarMatriz = async () => {
-    const { data } = await axios.get(
-      `http://localhost:8000/api/grado/${gradoSeleccionado.value}/matriz-competencias`
-    )
 
-    competencias.value = data.competencias
-    asignaturas.value = data.asignaturas
-    
+const cargarMatriz = async () => {
+  const { data } = await axios.get(
+    `http://localhost:8000/api/grado/${gradoSeleccionado.value}/matriz-competencias`
+  )
+
+  competencias.value = data.competencias
+  asignaturas.value = data.asignaturas
+
+  // después de cargar la matriz
+  asignaturas.value.forEach(asig => {
+    asig.ras.forEach(ra => {
+      ra.hoverCompId = null;
+      ra.loading = false;
+      ra.loadingCompId = null;
+    })
+  })
+
+}
+
+async function toggleCompRa(asig, ra, comp) {
+  if (!ra.comp_ras) ra.comp_ras = []
+
+  const tiene = tieneCompetencia(ra, comp.id)
+
+  // Optimistic update
+  if (tiene) {
+    ra.comp_ras = ra.comp_ras.filter(c => c.ID_Comp !== comp.id)
+  } else {
+    ra.comp_ras.push({ ID_Comp: comp.id, ID_Ra: ra.id, ID_Asignatura: asig.id })
   }
 
-  onMounted(async () => {
-    const { data } = await axios.get('http://localhost:8000/api/grados')
-    grados.value = data.data
-  })
+  // Marcar loading
+  ra.loading = true
+  ra.loadingCompId = comp.id
+
+  try {
+    await axios.post('http://localhost:8000/api/compRa/create', {
+      ID_Comp: comp.id,
+      ID_Ra: ra.id,
+      ID_Asignatura: asig.id
+    })
+  } catch (err) {
+    console.error(err)
+    // Revertir si falla
+    if (tiene) {
+      ra.comp_ras.push({ ID_Comp: comp.id, ID_Ra: ra.id, ID_Asignatura: asig.id })
+    } else {
+      ra.comp_ras = ra.comp_ras.filter(c => c.ID_Comp !== comp.id)
+    }
+  } finally {
+    ra.loading = false
+    ra.loadingCompId = null
+  }
+}
+
+onMounted(async () => {
+  const { data } = await axios.get('http://localhost:8000/api/grados')
+  grados.value = data.data
+})
+
+
+
 </script>
+
+<style scoped>
+td.cell-icon {
+  width: 60px;
+  height: 42px;
+  cursor: pointer;
+  vertical-align: middle;
+  padding: 0;
+}
+
+.spinner-border.text-purple {
+  border-color: #811C5E !important;
+  border-top-color: transparent !important;
+}
+</style>
