@@ -11,15 +11,13 @@ class Competencia extends Model
         "descripcion",
         "ID_Grado"
     ];
-
-    public function compRa(){
-        return $this->hasOne(compRa::class,"comp_ra","ID_Comp");
-    }
-    public function notasCompentencias(){
-        return $this->hasMany(NotaCompetencia::class,"ID_Compentencia");
+    public function compRas()
+    {
+        return $this->hasMany(CompRa::class, 'ID_Comp', 'id');
     }
     public function grado(){
         return $this-> belongsTo(Grado::class, "ID_Grado");
     }
 
 }
+

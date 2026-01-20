@@ -15,9 +15,7 @@ import TutorCuadernosView from '@/views/cuadernos/TutorCuadernosView.vue';
 
 import AlumnoNotasView from '@/views/alumno/AlumnoNotasView.vue'
 import CompRaView from '@/views/CompRaView.vue'
-
 import GradosView from '@/views/GradosView.vue'
-
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -51,16 +49,17 @@ const router = createRouter({
 
     },
     {
-      path: '/alumnosTutor/seguimiento',
+      path: '/tutor/alumno/:id/seguimiento',
       name: 'seguimientoAlumno',
       component: SeguimientoView
     },
 
     {
-      path: '/alumnosTutor/asignarEmpresa',
-      name: 'asignarEmpresa',
-      component: AsignarEmpresaView
-    },
+      path: '/tutor/seguimiento/:estanciaId',
+      name: 'seguimiento',
+      component: SeguimientoView,
+      props: true
+    },  
 
     {
       path: '/empresa',
