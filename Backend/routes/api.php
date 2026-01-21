@@ -149,8 +149,8 @@ Route::delete('/seguimiento/{id}', [SeguimientoController::class, 'eliminarSegui
 */
 Route::get('/asignaturas/{id}/ras', [AsignaturaController::class, 'getRas']);
 Route::post('/ras', [RaController::class, 'store']);
-Route::delete('/ras/{id}', [RaController::class, 'destroy']); 
-Route::post('/asignaturas', [AsignaturaController::class, 'store']);      
+Route::delete('/ras/{id}', [RaController::class, 'destroy']);
+Route::post('/asignaturas', [AsignaturaController::class, 'store']);
 Route::delete('/asignaturas/{id}', [AsignaturaController::class, 'destroy']);
 Route::post('/competencias',[CompetenciaController::class, 'store']);
 Route::delete('/competencias/{id}', [CompetenciaController::class, 'destroy']);
@@ -158,3 +158,7 @@ Route::delete('/competencias/{id}', [CompetenciaController::class, 'destroy']);
 Route::get('/grado/{id}/matriz-competencias/', [CompRaController::class, 'getCompRa']);
 Route::post('compRa/create',[CompRaController::class,'createOrDelete']);
 
+Route::get(
+  '/estancias/{id}/competencias',
+  [EstanciaController::class, 'competencias']
+);

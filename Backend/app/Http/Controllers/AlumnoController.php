@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 
 class AlumnoController extends Controller
 {
-  public function alumnosDeTutor(Request $request, int $id)
+    public function alumnosDeTutor(Request $request, int $id)
     {
         $user = $request->user();
 
@@ -34,8 +34,8 @@ class AlumnoController extends Controller
         if ($q !== '') {
             $query->whereHas('usuario', function ($u) use ($q) {
                 $u->where('nombre', 'like', "%{$q}%")
-                  ->orWhere('apellidos', 'like', "%{$q}%")
-                  ->orWhere('email', 'like', "%{$q}%");
+                    ->orWhere('apellidos', 'like', "%{$q}%")
+                    ->orWhere('email', 'like', "%{$q}%");
             });
         }
 
@@ -44,22 +44,7 @@ class AlumnoController extends Controller
                 'usuario:id,nombre,apellidos,email,tipo',
                 'grado:id,nombre',
                 'estanciaActual:id,ID_Alumno'
-            ])
-            ->paginate($perPage);
-
-        // Transformación de datos para el Front
-        $alumnos->getCollection()->transform(function ($a) {
-            return [
-                'ID_Usuario'     => $a->ID_Usuario,
-                'Nombre'         => $a->usuario?->nombre,
-                'Apellidos'      => $a->usuario?->apellidos,
-                'Email'          => $a->usuario?->email,
-                'Tipo'           => $a->usuario?->tipo,
-                'Grado'          => $a->grado?->nombre,
-                'Tiene_estancia' => $a->estanciaActual !== null,
-                'estancia_id'    => $a->estanciaActual?->id
-            ];
-        });
+            ])->get();
 
         return response()->json($alumnos);
     }
@@ -83,10 +68,7 @@ class AlumnoController extends Controller
                 ], 403);
             }
         }
-        // ----------------
 
-        // Misma lógica de búsqueda pero filtrando por 'id_instructor'
-        $perPage = (int) $request->query('per_page', 5);
         $q = trim((string) $request->query('q', ''));
 
         $query = Alumno::query()->where('id_instructor', $id);
@@ -94,8 +76,8 @@ class AlumnoController extends Controller
         if ($q !== '') {
             $query->whereHas('usuario', function ($u) use ($q) {
                 $u->where('nombre', 'like', "%{$q}%")
-                  ->orWhere('apellidos', 'like', "%{$q}%")
-                  ->orWhere('email', 'like', "%{$q}%");
+                    ->orWhere('apellidos', 'like', "%{$q}%")
+                    ->orWhere('email', 'like', "%{$q}%");
             });
         }
 
@@ -105,20 +87,10 @@ class AlumnoController extends Controller
                 'grado:id,nombre',
                 'estanciaActual:id,ID_Alumno'
             ])
-            ->paginate($perPage);
+            ->get();
+        return response()->json(
+            $alumnos);
 
-        $alumnos->getCollection()->transform(function ($a) {
-            return [
-                'ID_Usuario'     => $a->ID_Usuario,
-                'Nombre'         => $a->usuario?->nombre,
-                'Apellidos'      => $a->usuario?->apellidos,
-                'Email'          => $a->usuario?->email,
-                'Tipo'           => $a->usuario?->tipo,
-                'Grado'          => $a->grado?->nombre,
-                'Tiene_estancia' => $a->estanciaActual !== null,
-                'estancia_id'    => $a->estanciaActual?->id
-            ];
-        });
 
         return response()->json($alumnos);
     }
@@ -153,5 +125,4 @@ class AlumnoController extends Controller
 
         return response()->json($alumno);
     }
-
 }

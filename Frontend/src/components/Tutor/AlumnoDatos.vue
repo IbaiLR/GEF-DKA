@@ -8,7 +8,7 @@ import axios from 'axios'
 const props = defineProps({
   alumno: Object
 })
-
+console.log(props.alumno);
 const router = useRouter()
 const route = useRoute()
 const isTutorView = computed(() => route.name === 'alumnosTutor')
@@ -34,7 +34,6 @@ watch(
       }
       return
     }
-console.log(alumno)
     try {
       const token = localStorage.getItem('token')
       const res = await axios.get(
@@ -43,7 +42,6 @@ console.log(alumno)
       )
 
       const data = res.data
-      console.log(data)
       notasAlumno.value = {
         nota_cuaderno: data?.nota_cuaderno || [],
         notas_competencias: data?.notas_competencias || [],

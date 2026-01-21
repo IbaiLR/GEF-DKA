@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\EstanciaAlumno;
 use App\Models\Alumno;
-
+use App\Models\Competencia;
+use Illuminate\Http\Request;
 
 class EstanciaController extends Controller
 {
@@ -57,6 +58,12 @@ class EstanciaController extends Controller
         $estancia=EstanciaAlumno::create($data);
         return response()->json($estancia,201);
     }
+public function competencias(int $id)
+{
+    $competencias = EstanciaAlumno::with('competencias:id,descripcion')->findOrFail($id);
+
+    return response()->json($competencias);
+}
 
 }
 

@@ -3,7 +3,6 @@ import { ref, computed, onMounted } from 'vue'
 import axios from 'axios'
 import Buscador from '@/components/Buscador.vue'
 import { useUserStore } from '@/stores/userStore'
-import AlumnoDatos from '@/components/Tutor/AlumnoDatos.vue'
 
 const prop = defineProps({
   endpoint: String
@@ -25,7 +24,7 @@ async function cargarAlumnos() {
     const res = await axios.get(prop.endpoint, {
       headers: { Authorization: `Bearer ${token}` }
     })
-    alumnos.value = res.data.data
+    alumnos.value = res.data
   } catch (e) {
     console.error('Error cargando alumnos', e)
     alumnos.value = []
@@ -44,12 +43,6 @@ function onSearch(texto) {
   q.value = (texto || '').trim().toLowerCase()
 }
 
-const alumnosFiltrados = computed(() => {
-  if (!q.value) return alumnos.value
-  return alumnos.value.filter(a =>
-    `${a.Nombre} ${a.Apellidos}`.toLowerCase().includes(q.value)
-  )
-})
 
 onMounted(cargarAlumnos)
 </script>
@@ -58,7 +51,7 @@ onMounted(cargarAlumnos)
     <div class="col-md-3 mt-3">
       <Buscador tipo="Buscar Alumno" @search="onSearch" />
 
-      <ul v-if="alumnosFiltrados" class="list-group mt-3 shadow-sm">
+      <ul v-if="alumnos" class="list-group mt-3 shadow-sm">
         <button
           class="list-group-item list-group-item-action bg-indigo text-white fw-semibold"
           @click="alumnoSeleccionado = null"
@@ -67,13 +60,13 @@ onMounted(cargarAlumnos)
         </button>
 
         <li
-          v-for="a in alumnosFiltrados"
+          v-for="a in alumnos"
           :key="a.ID_Usuario"
           class="list-group-item cursor-pointer"
           :class="{ ' bg-light text-dark': alumnoSeleccionado?.ID_Usuario === a.ID_Usuario }"
-          @click="seleccionarAlumno(a)"
+          @click="seleccionarAlumno(a.usuario)"
         >
-          {{ a.Nombre }} {{ a.Apellidos }}
+          {{ a.usuario?.nombre }} {{ a.usuario?.apellidos }}
         </li>
       </ul>
 
@@ -81,7 +74,7 @@ onMounted(cargarAlumnos)
         <div class="spinner-border text-indigo"></div>
       </div>
 
-      <div v-if="!cargando && !alumnosFiltrados" class="text-muted text-center mt-3">
+      <div v-if="!cargando && !alumnos" class="text-muted text-center mt-3">
         No se encontraron alumnos
       </div>
     </div>

@@ -35,7 +35,9 @@ class EstanciaAlumno extends Model
     {
         return $this->belongsToMany(
             Competencia::class,
-            'comp_estancia'
+            'comp_estancia',
+            'ID_Estancia',
+            'ID_Comp'
         );
     }
 }
