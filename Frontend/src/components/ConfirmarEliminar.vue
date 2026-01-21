@@ -57,8 +57,8 @@ function cancelar() {
         </div>
       </div>
     </div>
-    <div class="modal-backdrop fade show"></div>
   </div>
+  <div v-if="show" class="modal-backdrop fade show"></div>
 </template>
 
 <style scoped>
