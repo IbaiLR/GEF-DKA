@@ -4,7 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\EstanciaAlumno;
 use App\Models\Alumno;
+
+use App\Models\Horario; 
+
 use App\Models\Competencia;
+
 use Illuminate\Http\Request;
 
 class EstanciaController extends Controller
@@ -51,6 +55,57 @@ class EstanciaController extends Controller
         return response()->json($estanciasEmpresa);
     }
 
+
+   public function asignarEstancia(Request $request)
+{
+    $data = $request->validate([
+        'ID_Alumno' => 'required|exists:Alumno,ID_Usuario',
+        'CIF_Empresa' => 'required|exists:Empresa,CIF',
+        'Fecha_inicio' => 'required|date',
+        'Fecha_fin' => 'required|date',
+        'ID_Instructor' => 'nullable|exists:Instructor,ID_Usuario',
+
+        'horarios' => 'required|array|min:1',
+        'horarios.*.Dia' => 'required|string',
+        'horarios.*.Horario1' => 'required|string',
+        'horarios.*.Horario2' => 'nullable|string',
+    ]);
+
+    // Crear estancia
+    $estancia = EstanciaAlumno::create([
+        'ID_Alumno'    => $data['ID_Alumno'],
+        'CIF_Empresa'  => $data['CIF_Empresa'],
+        'Fecha_inicio' => $data['Fecha_inicio'],
+        'Fecha_fin'    => $data['Fecha_fin'],
+    ]);
+
+    // Agrupar días por horarios iguales
+    $grupos = [];
+    foreach ($data['horarios'] as $h) {
+        if (!$h['Horario1'] && !$h['Horario2']) continue; // saltar si no hay horarios
+
+        $key = $h['Horario1'] . '|' . ($h['Horario2'] ?? '');
+        if (!isset($grupos[$key])) {
+            $grupos[$key] = [
+                'Dias' => [],
+                'Horario1' => $h['Horario1'],
+                'Horario2' => $h['Horario2'] ?? null,
+            ];
+        }
+        $grupos[$key]['Dias'][] = $h['Dia'];
+    }
+
+    // Insertar cada grupo en BD
+    foreach ($grupos as $g) {
+        Horario::create([
+            'ID_Estancia' => $estancia->id,
+            'Dias'        => implode('-', array_map(function($d){
+                return substr($d, 0, 1); // L-M-X-J-V
+            }, $g['Dias'])),
+            'Horario1'    => $g['Horario1'],
+            'Horario2'    => $g['Horario2'],
+        ]);
+
     public function asignarEstancia(Request $request)
     {
         $data = $request->validate([
@@ -62,6 +117,7 @@ class EstanciaController extends Controller
 
         $estancia = EstanciaAlumno::create($data);
         return response()->json($estancia, 201);
+
     }
     public function competencias(int $id, Request $req)
     {
@@ -76,6 +132,12 @@ class EstanciaController extends Controller
 
         return response()->json($competencias);
     }
+
+
+    return response()->json($estancia->load('horario'), 201);
+}
+
+
 
 
 }

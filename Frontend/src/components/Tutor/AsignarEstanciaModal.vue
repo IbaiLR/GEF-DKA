@@ -9,180 +9,226 @@ const props = defineProps({
 
 const emit = defineEmits(['close','crear'])
 
-// Datos de la estancia a crear
+const diasSemana = ['Lunes','Martes','Miércoles','Jueves','Viernes']
+
 const nuevaEstancia = ref({
   ID_Alumno: null,
   CIF_Empresa: '',
-  ID_Instructor: '',
+  ID_Instructor: '', // Opcional
   Fecha_inicio: '',
   Fecha_fin: '',
-  ID_Horario: ''
+  horarios: []
 })
 
-// Listas
 const empresas = ref([])
 const instructores = ref([])
-const horarios = ref([])
 
-// Cargar empresas al montar el modal
+function resetHorarios(){
+  nuevaEstancia.value.horarios = diasSemana.map(d => {
+    // Viernes
+    if (d === 'Viernes') {
+      return {
+        dia: d,
+        activo: true,
+        manana: { inicio: '09:00', fin: '15:00' },
+        tarde:  { inicio: '', fin: '' }
+      }
+    }
+
+    // Lunes a Jueves
+    return {
+      dia: d,
+      activo: true,
+      manana: { inicio: '08:00', fin: '14:00' },
+      tarde:  { inicio: '15:00', fin: '17:00' }
+    }
+  })
+}
+
 onMounted(async () => {
-  try {
-    const token = localStorage.getItem('token')
-    const res = await axios.get('http://localhost:8000/api/empresas', {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-    empresas.value = res.data || []
-  } catch (err) {
-    console.error(err)
-    alert('Error al cargar las empresas')
-  }
+  const token = localStorage.getItem('token')
+  const res = await axios.get('http://localhost:8000/api/empresas', {
+    headers:{ Authorization:`Bearer ${token}` }
+  })
+  empresas.value = res.data || []
 })
 
-// Cuando se abre el modal, asignar ID del alumno y limpiar
-watch(() => props.show, (val) => {
-  if(val && props.alumno) {
+watch(() => props.show, val => {
+  if(val && props.alumno){
     nuevaEstancia.value.ID_Alumno = props.alumno.ID_Usuario
     nuevaEstancia.value.CIF_Empresa = ''
-    nuevaEstancia.value.ID_Instructor = ''
+    nuevaEstancia.value.ID_Instructor = '' // Opcional
     nuevaEstancia.value.Fecha_inicio = ''
     nuevaEstancia.value.Fecha_fin = ''
-    nuevaEstancia.value.ID_Horario = ''
+    resetHorarios()
     instructores.value = []
-    horarios.value = []
   }
 })
 
-// Cargar instructores cuando se selecciona empresa
-watch(() => nuevaEstancia.value.CIF_Empresa, async (cif) => {
+watch(() => nuevaEstancia.value.CIF_Empresa, async cif => {
   if(!cif) return
-  try {
-    const token = localStorage.getItem('token')
-    const res = await axios.get(`http://localhost:8000/api/empresa/${cif}/instructores`, {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-    instructores.value = res.data || []
-    console.log(instructores)
-    nuevaEstancia.value.ID_Instructor = ''
-  } catch(err) {
-    console.error(err)
-    alert('Error al cargar instructores de la empresa')
-  }
+  const token = localStorage.getItem('token')
+  const res = await axios.get(`http://localhost:8000/api/empresa/${cif}/instructores`, {
+    headers:{ Authorization:`Bearer ${token}` }
+  })
+  instructores.value = res.data || []
 })
 
-// Cargar horarios cuando se selecciona instructor
-watch(() => nuevaEstancia.value.ID_Instructor, async (idInst) => {
-  if(!idInst) return
-  try {
-    const token = localStorage.getItem('token')
-    const res = await axios.get(`http://localhost:8000/api/instructores/${idInst}/horarios`, {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-    horarios.value = res.data || []
-    nuevaEstancia.value.ID_Horario = ''
-  } catch(err) {
-    console.error(err)
-    alert('Error al cargar horarios del instructor')
-  }
-})
+async function crearEstancia(){
+  const horariosActivos = nuevaEstancia.value.horarios.filter(h => h.activo)
 
-// Crear estancia
-async function crearEstancia() {
+  if(!horariosActivos.length){
+    alert('Selecciona al menos un día con horario')
+    return
+  }
+  if(!nuevaEstancia.value.Fecha_inicio || !nuevaEstancia.value.Fecha_fin){
+    alert('Debes seleccionar fecha inicio y fin')
+    return
+  }
+
+  const payload = {
+    ID_Alumno: nuevaEstancia.value.ID_Alumno,
+    CIF_Empresa: nuevaEstancia.value.CIF_Empresa,
+    ID_Instructor: nuevaEstancia.value.ID_Instructor || null, // Opcional
+    Fecha_inicio: nuevaEstancia.value.Fecha_inicio,
+    Fecha_fin: nuevaEstancia.value.Fecha_fin,
+    horarios: horariosActivos.map(h => ({
+      Dia: h.dia,
+      Horario1: h.manana.inicio && h.manana.fin ? `${h.manana.inicio}-${h.manana.fin}` : null,
+      Horario2: h.tarde.inicio && h.tarde.fin ? `${h.tarde.inicio}-${h.tarde.fin}` : null
+    }))
+  }
+
+  console.log('Payload a enviar:', payload)
+
   try {
     const token = localStorage.getItem('token')
-    const res = await axios.post('http://localhost:8000/api/asignarEstancia', nuevaEstancia.value, {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-    alert('Estancia creada correctamente')
+    const res = await axios.post(
+      'http://localhost:8000/api/asignarEstancia',
+      payload,
+      { headers:{ Authorization:`Bearer ${token}` } }
+    )
     emit('crear', res.data)
     cerrarModal()
   } catch(err) {
     console.error(err)
-    alert(err.response?.data?.message || 'Error al crear estancia')
+    alert('Error al crear la estancia. Revisa la consola.')
   }
 }
 
-function cerrarModal() {
+function cerrarModal(){
   emit('close')
 }
 </script>
 
 <template>
-  <div v-if="show" class="modal-backdrop-custom d-flex justify-content-center align-items-center">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-      <div class="modal-content shadow-lg rounded-4 border-0">
-        <!-- Header -->
-        <div class="modal-header text-white" style="background-color: #4f46e5;">
-          <h5 class="modal-title fw-bold">
-            <i class="bi bi-building-fill me-2"></i>
-            Asignar Estancia a {{ alumno?.Nombre }} {{ alumno?.Apellidos }}
-          </h5>
-          <button type="button" class="btn-close btn-close-white" @click="cerrarModal"></button>
+  <div v-if="show" class="card shadow-sm">
+
+    <!-- HEADER -->
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <h5 class="mb-0">
+        Asignar estancia a {{ alumno?.Nombre }} {{ alumno?.Apellidos }}
+      </h5>
+      <button type="button" class="btn-close" @click="cerrarModal"></button>
+    </div>
+
+    <!-- BODY -->
+    <div class="card-body">
+
+      <!-- Empresa -->
+      <div class="mb-2">
+        <label>Empresa</label>
+        <select v-model="nuevaEstancia.CIF_Empresa" class="form-control" required>
+          <option disabled value="">Selecciona una empresa</option>
+          <option v-for="e in empresas" :key="e.CIF" :value="e.CIF">
+            {{ e.Nombre }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Instructor Opcional -->
+      <div class="mb-2">
+        <label>Instructor (opcional)</label>
+        <select v-model="nuevaEstancia.ID_Instructor" class="form-control">
+          <option value="">No asignar</option>
+          <option v-for="i in instructores" :key="i.user.ID_Usuario" :value="i.user.ID_Usuario">
+            {{ i.user.nombre }} {{ i.user.apellidos }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Fechas -->
+      <div class="row">
+        <div class="col-md-6 mb-2">
+          <label>Fecha inicio</label>
+          <input type="date" v-model="nuevaEstancia.Fecha_inicio" class="form-control">
         </div>
 
-        <!-- Body -->
-        <div class="modal-body py-4">
-          <form @submit.prevent="crearEstancia" class="row g-4">
-            <!-- Empresa -->
-            <div class="col-12">
-              <label class="form-label fw-semibold">Empresa</label>
-              <select v-model="nuevaEstancia.CIF_Empresa" class="form-select form-select-lg" required>
-                <option value="" disabled>Selecciona una empresa</option>
-                <option v-for="e in empresas" :key="e.CIF" :value="e.CIF">{{ e.Nombre }}</option>
-              </select>
-            </div>
-
-            <!-- Instructor -->
-            <div class="col-12" v-if="instructores.length">
-              <label class="form-label fw-semibold">Instructor</label>
-              <select v-model="nuevaEstancia.ID_Instructor" class="form-select form-select-lg" required>
-                <option value="" disabled>Selecciona un instructor</option>
-                <option v-for="i in instructores" :key="i.user.ID_Usuario" :value="i.user.ID_Usuario">
-                  {{ i.user.nombre }} {{ i.user.apellidos }}
-                </option>
-              </select>
-            </div>
-
-            <!-- Fecha Inicio -->
-            <div class="col-md-6">
-              <label class="form-label fw-semibold">Fecha Inicio</label>
-              <input type="date" v-model="nuevaEstancia.Fecha_inicio" class="form-control form-control-lg" required />
-            </div>
-
-            <!-- Fecha Fin -->
-            <div class="col-md-6">
-              <label class="form-label fw-semibold">Fecha Fin</label>
-              <input type="date" v-model="nuevaEstancia.Fecha_fin" class="form-control form-control-lg" required />
-            </div>
-
-            <!-- Horario -->
-            <div class="col-12" v-if="horarios.length">
-              <label class="form-label fw-semibold">Horario</label>
-              <select v-model="nuevaEstancia.ID_Horario" class="form-select form-select-lg" required>
-                <option value="" disabled>Selecciona un horario</option>
-                <option v-for="h in horarios" :key="h.ID" :value="h.ID">
-                  {{ h.Dias }} | {{ h.Horario1 }} - {{ h.Horario2 }}
-                </option>
-              </select>
-            </div>
-          </form>
-        </div>
-
-        <!-- Footer -->
-        <div class="modal-footer py-3">
-          <button type="button" class="btn btn-outline-secondary btn-lg" @click="cerrarModal">
-            <i class="bi bi-x-circle me-1"></i> Cancelar
-          </button>
-          <button type="button" class="btn btn-indigo btn-lg text-white" @click="crearEstancia">
-            <i class="bi bi-check-circle me-1"></i> Crear Estancia
-          </button>
+        <div class="col-md-6 mb-2">
+          <label>Fecha fin</label>
+          <input type="date" v-model="nuevaEstancia.Fecha_fin" class="form-control">
         </div>
       </div>
+
+      <!-- HORARIOS -->
+      <hr>
+      <h6 class="fw-bold mb-2">Horarios semanales</h6>
+
+      <div v-for="(h,i) in nuevaEstancia.horarios" :key="i" class="border rounded p-2 mb-2">
+        <div class="form-check mb-2">
+          <input class="form-check-input" type="checkbox" v-model="h.activo" :id="'dia-' + i">
+          <label class="form-check-label fw-semibold" :for="'dia-' + i">
+            {{ h.dia }}
+          </label>
+        </div>
+
+        <div v-if="h.activo" class="row">
+          <div class="col-md-3 mb-2">
+            <label>Mañana inicio</label>
+            <input type="time" v-model="h.manana.inicio" class="form-control">
+          </div>
+          <div class="col-md-3 mb-2">
+            <label>Mañana fin</label>
+            <input type="time" v-model="h.manana.fin" class="form-control">
+          </div>
+          <div class="col-md-3 mb-2">
+            <label>Tarde inicio</label>
+            <input type="time" v-model="h.tarde.inicio" class="form-control">
+          </div>
+          <div class="col-md-3 mb-2">
+            <label>Tarde fin</label>
+            <input type="time" v-model="h.tarde.fin" class="form-control">
+          </div>
+        </div>
+      </div>
+
     </div>
+
+    <!-- FOOTER -->
+    <div class="card-footer d-flex justify-content-end gap-2">
+      <button class="btn btn-secondary" @click="cerrarModal">Cancelar</button>
+      <button class="btn btn-indigo" @click="crearEstancia">Guardar</button>
+    </div>
+
   </div>
 </template>
 
 <style>
 
+.btn-indigo {
+  background-color: #4f46e5;
+  border-color: #4f46e5;
+  color: white;
+}
+
+.btn-indigo:hover {
+  background-color: #4338ca;
+  border-color: #4338ca;
+}
+
+.card {
+  border-radius: 6px;
+}
 .modal-content {
   transition: transform 0.2s ease-in-out;
 }

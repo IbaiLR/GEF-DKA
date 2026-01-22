@@ -11,7 +11,7 @@ return new class extends Migration {
             $table->unsignedBigInteger('ID_Estancia');
             $table->string('Dias',20);
             $table->string('Horario1',20);
-            $table->string('Horario2',20);
+            $table->string('Horario2',20)->nullable();
             $table->timestamps();
 
             $table->foreign('ID_Estancia')

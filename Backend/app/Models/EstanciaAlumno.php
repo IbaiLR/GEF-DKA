@@ -10,8 +10,8 @@ class EstanciaAlumno extends Model
     protected $fillable = [
         'ID_Alumno',
         'CIF_Empresa',
-        'Fecha_Inicio',
-        'Fecha_Fin'
+        'Fecha_inicio',
+        'Fecha_fin'
     ];
 
     public function horario()

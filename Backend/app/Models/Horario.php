@@ -15,6 +15,6 @@ class Horario extends Model
     ];
 
     public function estancia(){
-        return $this->belongsTo(EstanciaAlumno::class);
+        return $this->belongsTo(EstanciaAlumno::class, 'ID_Estancia','ID');
     }
 }
