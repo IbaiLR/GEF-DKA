@@ -115,6 +115,8 @@ Route::get('/alumno/entregas/descargar/{id}', [AlumnoEntregaController::class, '
 */
 // Notas de alumno
 Route::get('/alumno/{id}/mis-notas', [AlumnoController::class, 'misNotas']);
+Route::post('/alumnos/{idAlumno}/nota-egibide', [AlumnoController::class, 'guardarNotaEgibide'])->middleware('auth:sanctum');
+
 // Notas por alumno (empresa)
 Route::get('/alumnos/{idAlumno}/notas', [NotasEmpresaController::class, 'show'])->middleware('auth:sanctum');
 Route::post('/alumnos/{idAlumno}/notas', [NotasEmpresaController::class, 'store'])->middleware('auth:sanctum');

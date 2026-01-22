@@ -112,7 +112,23 @@ async function crearEstancia(){
     console.error(err)
     alert('Error al crear la estancia. Revisa la consola.')
   }
-}
+  }
+
+  // Horario global para rellenar todos los días
+  const horarioGlobal = ref({
+    manana: { inicio: '', fin: '' },
+    tarde:  { inicio: '', fin: '' }
+  })
+
+  // Función para aplicar global a todos los días
+  function aplicarGlobal(turno, campo) {
+    nuevaEstancia.value.horarios.forEach(h => {
+      if(h.activo){
+        h[turno][campo] = horarioGlobal.value[turno][campo]
+      }
+    })
+  }
+
 
 function cerrarModal(){
   emit('close')
@@ -129,7 +145,7 @@ function cerrarModal(){
       </h5>
       <button type="button" class="btn-close" @click="cerrarModal"></button>
     </div>
-
+    
     <!-- BODY -->
     <div class="card-body">
 
@@ -170,36 +186,43 @@ function cerrarModal(){
       </div>
 
       <!-- HORARIOS -->
-      <hr>
-      <h6 class="fw-bold mb-2">Horarios semanales</h6>
+<hr>
+<div class="d-flex justify-content-between align-items-center mb-2">
+  <h6 class="fw-bold mb-0">Horarios semanales</h6>
+  <div class="d-flex gap-2">
+    <input type="time" v-model="horarioGlobal.manana.inicio" class="form-control form-control-sm" @change="aplicarGlobal('manana', 'inicio')">
+    <input type="time" v-model="horarioGlobal.manana.fin" class="form-control form-control-sm" @change="aplicarGlobal('manana', 'fin')">
+    <input type="time" v-model="horarioGlobal.tarde.inicio" class="form-control form-control-sm" @change="aplicarGlobal('tarde', 'inicio')">
+    <input type="time" v-model="horarioGlobal.tarde.fin" class="form-control form-control-sm" @change="aplicarGlobal('tarde', 'fin')">
+  </div>
+</div>
 
-      <div v-for="(h,i) in nuevaEstancia.horarios" :key="i" class="border rounded p-2 mb-2">
-        <div class="form-check mb-2">
-          <input class="form-check-input" type="checkbox" v-model="h.activo" :id="'dia-' + i">
-          <label class="form-check-label fw-semibold" :for="'dia-' + i">
-            {{ h.dia }}
-          </label>
-        </div>
+<div v-for="(h,i) in nuevaEstancia.horarios" :key="i" class="border rounded p-2 mb-2">
+  <div class="form-check mb-2">
+    <input class="form-check-input" type="checkbox" v-model="h.activo" :id="'dia-' + i">
+    <label class="form-check-label fw-semibold" :for="'dia-' + i">{{ h.dia }}</label>
+  </div>
 
-        <div v-if="h.activo" class="row">
-          <div class="col-md-3 mb-2">
-            <label>Mañana inicio</label>
-            <input type="time" v-model="h.manana.inicio" class="form-control">
-          </div>
-          <div class="col-md-3 mb-2">
-            <label>Mañana fin</label>
-            <input type="time" v-model="h.manana.fin" class="form-control">
-          </div>
-          <div class="col-md-3 mb-2">
-            <label>Tarde inicio</label>
-            <input type="time" v-model="h.tarde.inicio" class="form-control">
-          </div>
-          <div class="col-md-3 mb-2">
-            <label>Tarde fin</label>
-            <input type="time" v-model="h.tarde.fin" class="form-control">
-          </div>
-        </div>
-      </div>
+  <div v-if="h.activo" class="row">
+    <div class="col-md-3 mb-2">
+      <label>Mañana inicio</label>
+      <input type="time" v-model="h.manana.inicio" class="form-control">
+    </div>
+    <div class="col-md-3 mb-2">
+      <label>Mañana fin</label>
+      <input type="time" v-model="h.manana.fin" class="form-control">
+    </div>
+    <div class="col-md-3 mb-2">
+      <label>Tarde inicio</label>
+      <input type="time" v-model="h.tarde.inicio" class="form-control">
+    </div>
+    <div class="col-md-3 mb-2">
+      <label>Tarde fin</label>
+      <input type="time" v-model="h.tarde.fin" class="form-control">
+    </div>
+  </div>
+</div>
+
 
     </div>
 

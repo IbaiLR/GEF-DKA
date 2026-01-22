@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\NotaCuaderno;
+use App\Models\NotaEgibide;
 use App\Models\Alumno;
 use Illuminate\Http\Request;
 
@@ -126,5 +127,30 @@ class AlumnoController extends Controller
 
 
         return response()->json($alumno);
+    }
+
+    public function guardarNotaEgibide(Request $request, $idAlumno)
+    {
+        $request->validate([
+            'id' => 'required|integer|exists:nota_egibide,id',
+            'nota' => 'required|numeric|min:0|max:10',
+        ]);
+
+        // Autorización
+        $alumno = Alumno::findOrFail($idAlumno);
+        $user = $request->user();
+        if ($user->tipo !== 'admin' && $user->id != $alumno->ID_Tutor && $user->id != $alumno->ID_Instructor) {
+            return response()->json(['message' => 'No autorizado'], 403);
+        }
+
+        $nota = NotaEgibide::findOrFail($request->id);
+        $nota->nota = $request->nota;
+        $nota->save();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Nota guardada correctamente',
+            'nota' => $nota
+        ]);
     }
 }
