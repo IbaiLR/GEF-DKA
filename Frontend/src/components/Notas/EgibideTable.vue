@@ -1,7 +1,38 @@
 <script setup>
+import { ref, watch } from 'vue'
+import axios from 'axios'
+
 const props = defineProps({
-  egibide: Array
+  egibide: Array,
+  alumnoId: Number
 })
+
+const notasEditable = ref([])
+
+// Actualiza notasEditable cuando cambian las props
+watch(
+  () => props.egibide,
+  (val) => {
+    notasEditable.value = val.map(n => ({ ...n }))
+  },
+  { immediate: true }
+)
+
+async function guardarNota(nota) {
+  console.log(nota)
+  try {
+    const token = localStorage.getItem('token')
+    await axios.post(
+      `http://localhost:8000/api/alumnos/${props.alumnoId}/nota-egibide`,
+      { id: nota.id, nota: nota.nota },
+      { headers: { Authorization: `Bearer ${token}` } }
+    )
+    alert(`Nota de ${nota.asignatura?.nombre || 'Asignatura'} guardada correctamente`)
+  } catch (err) {
+    console.error(err)
+    alert('Error al guardar la nota')
+  }
+}
 </script>
 
 <template>
@@ -13,17 +44,17 @@ const props = defineProps({
         <tr>
           <th>Asignatura</th>
           <th>Nota</th>
+          <th>Acciones</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="n in egibide" :key="n.id">
+        <tr v-for="(n, i) in notasEditable" :key="n.ID">
           <td class="text-center text-md-start">{{ n.asignatura?.nombre ?? 'Sin nombre' }}</td>
           <td class="text-center text-md-start">
-            <span :class="{
-              'badge bg-success': n.nota >= 5,
-              'badge bg-danger text-white': n.nota < 5,
-              'badge bg-warning text-dark': n.nota == null
-            }">{{ n.nota ?? 'Sin nota' }}</span>
+            <input type="number" min="0" max="10" step="0.1" v-model="n.nota" class="form-control form-control-sm" />
+          </td>
+          <td class="text-center text-md-start">
+            <button class="btn btn-sm btn-success" @click="guardarNota(n)">Guardar</button>
           </td>
         </tr>
       </tbody>

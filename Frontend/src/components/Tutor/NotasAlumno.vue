@@ -20,7 +20,7 @@ const props = defineProps({
       <CuardernosTable v-if="notas?.nota_cuaderno" :notaCuaderno="[notas.nota_cuaderno]" :alumno-id="alumno.ID_Usuario" />
       <CompetenciasTable v-if="notas?.notas_competencias" :competencias="notas.notas_competencias" />
       <TransversalesTable v-if="notas?.notas_transversales" :transversales="notas.notas_transversales" />
-      <EgibideTable v-if="notas?.notas_egibide" :egibide="notas.notas_egibide" />
+      <EgibideTable :egibide="notas.notas_egibide" :alumno-id="alumno.ID_Usuario" />
     </div>
   </div>
 </template>

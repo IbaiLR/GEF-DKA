@@ -7,7 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 class NotaEgibide extends Model
 {
     protected $table = "nota_egibide";
-    protected $primaryKey= 'ID';
+    protected $fillable =[
+        'ID_Asignatura',
+        'ID_Alumno',
+        'nota'
+    ];
     
     public function asignatura(){
         return $this->belongsTo(Asignatura::class,'ID_Asignatura','id');
