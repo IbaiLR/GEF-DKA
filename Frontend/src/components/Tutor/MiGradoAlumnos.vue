@@ -1,12 +1,14 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import axios from "axios";
+import api from "@/services/api.js"
 
 // Estados
 const alumnos = ref([]);
 const asignaturas = ref([]);
 const gradoNombre = ref("");
 const loading = ref(false);
+
 
 // Control del acordeón (guardamos el ID del alumno desplegado)
 const alumnoDesplegado = ref(null);
@@ -25,7 +27,7 @@ const fetchDatosGrado = async () => {
   loading.value = true;
   const token = localStorage.getItem('token');
   try {
-    const res = await axios.get("http://127.0.0.1:8000/api/mi-grado/gestion", {
+    const res = await api.get("/api/mi-grado/gestion", {
         headers: { Authorization: `Bearer ${token}` }
     });
     
@@ -39,6 +41,9 @@ const fetchDatosGrado = async () => {
     loading.value = false;
   }
 };
+async function getNotasAlumno(idAlumno){
+
+}
 
 // Función Placeholder para el cálculo futuro
 const calcularNotaFinal = (alumno) => {
@@ -122,19 +127,31 @@ onMounted(() => {
                             <th class="fw-normal text-muted" style="font-size: 0.8rem; width: 12%;">Cuaderno (20%)</th>
                         </tr>
                       </thead>
-                      <tbody>
-                        <tr v-for="asig in asignaturas" :key="asig.id">
-                          <td class="text-start px-3 fw-bold text-secondary">{{ asig.nombre }}</td>
-                          
-                          <td class="bg-warning-subtle fw-bold text-dark">-</td>
+                  <tbody>
+  <tr v-for="asig in asignaturas" :key="asig.id">
+    <td class="text-start px-3 fw-bold text-secondary">{{ asig.nombre }}</td>
+    
+    <td class="bg-warning-subtle fw-bold text-dark">
+        {{ alumno.notas_calculadas?.[asig.id]?.egibide ?? '-' }}
+    </td>
 
-                          <td class="text-muted fst-italic">-</td>
-                          <td class="text-muted fst-italic">-</td>
-                          <td class="text-muted fst-italic">-</td>
-                          
-                          <td class="bg-success-subtle fw-bold text-dark fs-6">-</td>
-                        </tr>
-                      </tbody>
+    <td class="text-muted fst-italic">
+        {{ alumno.notas_calculadas?.[asig.id]?.tecnica ?? '-' }}
+    </td>
+
+    <td class="text-muted fst-italic">
+        {{ alumno.notas_calculadas?.[asig.id]?.transversal ?? '-' }}
+    </td>
+
+    <td class="text-muted fst-italic">
+        {{ alumno.notas_calculadas?.[asig.id]?.cuaderno ?? '-' }}
+    </td>
+    
+    <td class="bg-success-subtle fw-bold text-dark fs-6">
+       {{ alumno.notas_calculadas?.[asig.id]?.final ?? '-' }}
+    </td>
+  </tr>
+</tbody>
                     </table>
 
                     <div class="d-flex justify-content-end mt-3">
@@ -161,25 +178,7 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.bg-indigo { background-color: #6610f2; }
-.text-indigo { color: #6610f2; }
 
-.btn-indigo { 
-    background-color: #6610f2; 
-    border-color: #6610f2; 
-}
-.btn-indigo:hover { background-color: #520dc2; }
-
-.btn-outline-indigo { 
-    color: #6610f2; 
-    border-color: #6610f2; 
-}
-.btn-outline-indigo:hover { 
-    background-color: #6610f2; 
-    color: white; 
-}
-
-/* Colores de fondo suaves para las columnas destacadas */
 .bg-warning-subtle { background-color: #fff3cd !important; }
 .bg-success-subtle { background-color: #d1e7dd !important; }
 

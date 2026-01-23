@@ -7,9 +7,19 @@ use App\Models\Asignatura;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Services\NotasAlumnoService;
 
 class GradoController extends Controller
 {
+protected $notasService;
+
+    public function __construct(NotasAlumnoService $notasService)
+    {
+        $this->notasService = $notasService;
+    }
+
+ 
+
     public function getGrados(Request $request)
     {
         // Iniciamos la consulta
@@ -54,30 +64,40 @@ class GradoController extends Controller
         return response()->json($competencias);
     }
 
-    public function getDatosGestionTutor(Request $request)
+   public function getDatosGestionTutor(Request $request)
     {
         $user = $request->user();
 
-        // 1. Buscamos el grado que gestiona este tutor
+        // 1. Obtener Grado
         $grado = DB::table('grado')->where('ID_Tutor', $user->id)->first();
+        if (!$grado) return response()->json(['message' => 'Sin grado'], 404);
 
-        if (!$grado) {
-            return response()->json(['message' => 'No tienes grado asignado'], 404);
-        }
+        // 2. Obtener Asignaturas
+        $asignaturas = DB::table('asignatura')->where('ID_Grado', $grado->id)->get();
 
-        // 2. Buscamos los alumnos de ese grado (ordenados por apellido)
-        // Asumiendo que la relación es: User -> Alumno -> Grado
+        // 3. Obtener Alumnos
         $alumnos = User::where('tipo', 'alumno')
             ->whereHas('alumno', function($q) use ($grado) {
                 $q->where('ID_Grado', $grado->id);
             })
-            ->orderBy('apellidos', 'asc') // Orden alfabético
+            ->with('alumno') // Cargar relación alumno para tener su ID
+            ->orderBy('apellidos', 'asc')
             ->get();
 
-        // 3. Buscamos las asignaturas del grado (para mostrar en el desplegable)
-        $asignaturas = DB::table('asignatura')
-            ->where('ID_Grado', $grado->id)
-            ->get();
+        // 4. --- MAGIA AQUÍ: Inyectar notas a cada alumno ---
+        // Transformamos la colección de alumnos para añadirle las notas
+        $alumnos = $alumnos->map(function ($usuarioAlumno) use ($grado) {
+            // Obtenemos el ID de la tabla 'alumno' (no del user)
+            $idAlumnoTabla = $usuarioAlumno->alumno->id; 
+
+            // Llamamos al servicio
+            $notas = $this->notasService->obtenerNotasDelAlumno($idAlumnoTabla, $grado->id);
+            
+            // Añadimos la propiedad al objeto JSON
+            $usuarioAlumno->notas_calculadas = $notas;
+            
+            return $usuarioAlumno;
+        });
 
         return response()->json([
             'grado' => $grado,
