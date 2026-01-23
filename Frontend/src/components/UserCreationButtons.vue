@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue'
 import FormularioUsuario from './FormularioUsuario.vue'
 import axios from 'axios'
+import api from '@/services/api.js'
 
 const props = defineProps({
     tipo: {
@@ -33,9 +34,9 @@ function abrirModal(tipoSeleccionado) {
 
 async function crearUsuario(userData) {
   console.log(userData);
-  
+
     try {
-        const response = await axios.post('http://localhost:8000/api/user/create', {
+        const response = await api.post('/api/user/create', {
             ...userData,
             tipo: tipoUsuario.value
         })

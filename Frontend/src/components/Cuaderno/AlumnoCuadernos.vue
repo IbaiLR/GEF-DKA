@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import { useUserStore } from '@/stores/userStore'
+import api from '@/services/api.js'
 
 const userStore = useUserStore()
 const alumnoId = userStore.user?.id
@@ -14,8 +15,8 @@ const mensaje = ref('')
 async function fetchEntregas() {
   const token = localStorage.getItem('token')
   try {
-    const res = await axios.get(
-      `http://localhost:8000/api/entregas/alumno/${alumnoId}`,
+    const res = await api.get(
+      `/api/entregas/alumno/${alumnoId}`,
       { headers: { Authorization: `Bearer ${token}` } }
     )
     entregas.value = res.data
@@ -56,8 +57,8 @@ async function subirPDF(entregaId) {
   formData.append('ID_Entrega', entregaId)
 
   try {
-    await axios.post(
-      `http://localhost:8000/api/entregarCuaderno/alumno/${alumnoId}`,
+    await api.post(
+      `/api/entregarCuaderno/alumno/${alumnoId}`,
       formData,
       { headers: { Authorization: `Bearer ${userStore.token}`, 'Content-Type': 'multipart/form-data' } }
     )

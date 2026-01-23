@@ -3,6 +3,7 @@ import { ref, watch } from "vue";
 import axios from "axios";
 import FormularioCrear from "@/components/FormularioCrear.vue";
 import ConfirmarEliminar from '../ConfirmarEliminar.vue'; // <--- IMPORTAMOS
+import api from '@/services/api.js'
 
 const props = defineProps({ grado: Object });
 const competencias = ref([]);
@@ -17,12 +18,12 @@ const fetchCompetencias = async () => {
   if (!props.grado) return;
   loading.value = true;
   try {
-    const res = await axios.get(
-      `http://127.0.0.1:8000/api/grados/${props.grado.id}/competencias`,
+    const res = await api.get(
+      `/api/grados/${props.grado.id}/competencias`,
     );
     competencias.value = res.data;
   } catch (e) {
-    console.error(e); 
+    console.error(e);
   } finally {
     loading.value = false;
   }
@@ -51,8 +52,8 @@ function confirmarEliminarComp(confirmado) {
 
 async function eliminarCompetencia(id) {
   try {
-    await axios.delete(
-      `http://127.0.0.1:8000/api/competencias/${id}`,
+    await api.delete(
+      `/api/competencias/${id}`,
     );
     fetchCompetencias();
   } catch (e) {
@@ -116,10 +117,10 @@ async function eliminarCompetencia(id) {
       @creado="onCreado"
     />
 
-    <ConfirmarEliminar 
-        :show="eliminarModalVisible" 
+    <ConfirmarEliminar
+        :show="eliminarModalVisible"
         mensaje="¿Seguro que quieres eliminar esta competencia?"
-        @confirm="confirmarEliminarComp" 
+        @confirm="confirmarEliminarComp"
         @close="eliminarModalVisible = false"
     />
   </div>

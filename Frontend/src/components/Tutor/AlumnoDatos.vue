@@ -4,6 +4,7 @@ import { useRouter, useRoute } from 'vue-router'
 import AsignarEstanciaModal from '@/components/Tutor/AsignarEstanciaModal.vue'
 import NotasAlumno from '@/components/Tutor/NotasAlumno.vue'
 import axios from 'axios'
+import api from '@/services/api.js'
 
 const props = defineProps({
   alumno: Object
@@ -36,8 +37,8 @@ watch(
     }
     try {
       const token = localStorage.getItem('token')
-      const res = await axios.get(
-        `http://localhost:8000/api/alumno/${alumno.ID_Usuario}/mis-notas`,
+      const res = await api.get(
+        `/api/alumno/${alumno.ID_Usuario}/mis-notas`,
         { headers: { Authorization: `Bearer ${token}` } }
       )
 

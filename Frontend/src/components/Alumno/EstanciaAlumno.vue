@@ -4,6 +4,7 @@ import axios from "axios";
 import { useUserStore } from '@/stores/userStore';
 import EstanciaDatos from './EstanciaDatos.vue';
 import EstanciaHorario from './EstanciaHorario.vue';
+import api from '@/services/api.js'
 
 const estancia = ref(null);
 const userStore = useUserStore();
@@ -11,7 +12,7 @@ const alumnoId = userStore.user.id;
 
 async function fetchEstancia() {
   try {
-    const response = await axios.get(`http://localhost:8000/api/alumno/${alumnoId}/estancia`);
+    const response = await api.get(`/api/alumno/${alumnoId}/estancia`);
     estancia.value = response.data;
   } catch (error) {
     console.error(error);

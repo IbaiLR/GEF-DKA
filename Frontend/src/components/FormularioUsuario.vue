@@ -1,6 +1,7 @@
 <script setup>
 import { ref, watch, defineProps, defineEmits } from 'vue'
 import axios from 'axios'
+import api from '@/services/api.js'
 
 const props = defineProps({
   show: Boolean,
@@ -34,10 +35,10 @@ watch(() => props.show, async (val) => {
 
 async function cargarGrados() {
   try {
-    const response = await axios.get("http://localhost:8000/api/grados")
+    const response = await api.get("/api/grados")
     grados.value = response.data.data
     console.log(grados.value);
-    
+
   } catch (e) {
     console.error(e)
   }

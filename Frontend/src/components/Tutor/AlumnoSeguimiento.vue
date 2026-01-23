@@ -4,6 +4,8 @@ import axios from 'axios'
 import CrearSeguimientoModal from './CrearSeguimientoModal.vue'
 import EditarSeguimientoModal from './EditarSeguimientoModal.vue'
 import ConfirmarEliminar from '../ConfirmarEliminar.vue'
+import api from '@/services/api.js'
+
 const props = defineProps({
   estanciaId: {
     type: Number,
@@ -25,8 +27,8 @@ async function cargarSeguimientos() {
   if (!props.estanciaId) return
 
   try {
-    const res = await axios.get(
-      `http://localhost:8000/api/estancia/${props.estanciaId}/seguimientos`,
+    const res = await api.get(
+      `/api/estancia/${props.estanciaId}/seguimientos`,
       { headers: { Authorization: `Bearer ${token}` } }
     )
     seguimientos.value = res.data
@@ -64,8 +66,8 @@ function confirmarEliminar(confirmado) {
 async function guardarNuevoSeguimiento(data) {
   const token = localStorage.getItem('token')
   try {
-    const res = await axios.post(
-      `http://localhost:8000/api/seguimiento`,
+    const res = await api.post(
+      `/api/seguimiento`,
       { ...data, ID_Estancia: props.estanciaId },
       { headers: { Authorization: `Bearer ${token}` } }
     )
@@ -85,8 +87,8 @@ async function guardarEdicionSeguimiento(data) {
   }
   const token = localStorage.getItem('token')
   try {
-    const res = await axios.put(
-      `http://localhost:8000/api/seguimiento/${data.id}`,
+    const res = await api.put(
+      `/api/seguimiento/${data.id}`,
       data,
       { headers: { Authorization: `Bearer ${token}` } }
     )
@@ -109,7 +111,7 @@ async function eliminarSeguimiento(id) {
 
   const token = localStorage.getItem('token')
   try {
-    const res = await axios.delete(`http://localhost:8000/api/seguimiento/${id}`,
+    const res = await api.delete(`/api/seguimiento/${id}`,
       { headers: { Authorization: `Bearer ${token}` } }
     )
     seguimientos.value = seguimientos.value.filter(s => (s.id) !== id)

@@ -2,6 +2,7 @@
 import { ref, onMounted } from "vue";
 import axios from "axios";
 import { useUserStore } from '@/stores/userStore';
+import api from '@/services/api.js'
 
 const estancias = ref([]);
 const userStore = useUserStore();
@@ -9,7 +10,7 @@ const alumnoId = userStore.user.id;
 
 async function fetchEstancias() {
   try {
-    const response = await axios.get(`http://localhost:8000/api/tutor/alumno/${alumnoId}/estancias`);
+    const response = await api.get(`/api/tutor/alumno/${alumnoId}/estancias`);
     estancias.value = response.data;
   } catch (error) {
     console.error(error);

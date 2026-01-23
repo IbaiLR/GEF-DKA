@@ -29,10 +29,11 @@ const email = ref('');
 const password = ref('');
 const errorMessage = ref('');
 const router = useRouter();
+import api from '@/services/api.js'
 
 const login = async () => {
   try {
-    const response = await axios.post('http://127.0.0.1:8000/api/login', {
+    const response = await api.post('/api/login', {
       email: email.value,
       password: password.value
     });
@@ -59,9 +60,9 @@ const login = async () => {
 <style scoped>
   .logo-img {
 
-  height: 5rem; 
-  width: auto;  
-  margin-bottom: 1rem; 
+  height: 5rem;
+  width: auto;
+  margin-bottom: 1rem;
   mix-blend-mode: multiply;
 }
 </style>

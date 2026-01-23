@@ -3,6 +3,7 @@ import { ref, computed, onMounted, watch } from 'vue'
 import axios from 'axios'
 import Buscador from '@/components/Buscador.vue'
 import { useUserStore } from '@/stores/userStore'
+import api from '@/services/api.js'
 
 const prop = defineProps({
   endpoint: String
@@ -37,7 +38,7 @@ async function cargarAlumnos() {
   cargando.value = true
   try {
     const token = localStorage.getItem('token')
-    const res = await axios.get(prop.endpoint, {
+    const res = await api.get(prop.endpoint, {
       headers: { Authorization: `Bearer ${token}` }
     })
     alumnos.value = res.data
@@ -50,7 +51,7 @@ async function cargarAlumnos() {
 }
 
 function seleccionarAlumno(a) {
-  alumnoSeleccionado.value = a  
+  alumnoSeleccionado.value = a
   emit('seleccionarAlumno', a)
 }
 

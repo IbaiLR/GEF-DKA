@@ -2,6 +2,7 @@
 import axios from "axios";
 import { ref, watch, onMounted } from "vue";
 import UserCreationButtons from "./UserCreationButtons.vue";
+import api from '@/services/api.js'
 const emit = defineEmits(["change"]);
 
 const tipo = ref("NONE");
@@ -9,7 +10,7 @@ const grado = ref("NONE");
 const grados = ref([]);
 async function cargarGrados() {
   try {
-    const response = await axios.get("http://localhost:8000/api/grados");
+    const response = await api.get("/api/grados");
     grados.value = response.data.data;
   } catch (e) {
     console.error(e);

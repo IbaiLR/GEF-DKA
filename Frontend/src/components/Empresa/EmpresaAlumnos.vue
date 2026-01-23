@@ -3,6 +3,7 @@ import axios from 'axios'
 import { ref, watch } from 'vue'
 
 const props = defineProps({ empresa: Object })
+import api from '@/services/api.js'
 
 const alumnos = ref([])
 const cache = ref({})
@@ -17,7 +18,7 @@ async function cargarAlumnos(cif) {
     }
     loading.value = true
     try {
-        const response = await axios.get(`http://localhost:8000/api/empresa/${cif}/alumnos`)
+        const response = await api.get(`/api/empresa/${cif}/alumnos`)
         cache.value[cif] = response.data
         alumnos.value = response.data
     } catch (e) {

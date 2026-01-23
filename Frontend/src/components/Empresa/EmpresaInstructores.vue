@@ -2,6 +2,7 @@
 import axios from 'axios'
 import { ref, watch } from 'vue'
 import FormularioUsuario from '../FormularioUsuario.vue'
+import api from '@/services/api.js'
 
 const props = defineProps({ empresa: Object })
 
@@ -18,7 +19,7 @@ async function cargarInstructores(cif) {
     }
     loading.value = true
     try {
-        const response = await axios.get(`http://localhost:8000/api/empresa/${cif}/instructores`)
+        const response = await api.get(`/api/empresa/${cif}/instructores`)
         cache.value[cif] = response.data
         instructores.value = response.data
     } catch (e) {
@@ -39,7 +40,7 @@ watch(
 
 async function crearUsuario(instructorData) {
     try {
-        const response = await axios.post('http://localhost:8000/api/empresa/instructor/create', {
+        const response = await api.post('/api/empresa/instructor/create', {
             ...instructorData,
             CIF_Empresa: props.empresa.CIF
         })
@@ -97,7 +98,7 @@ async function crearUsuario(instructorData) {
                         <td colspan="3" class="text-center text-muted">No hay instructores</td>
                     </tr>
                 </tbody>
-                
+
             </table>
         </div>
     </div>

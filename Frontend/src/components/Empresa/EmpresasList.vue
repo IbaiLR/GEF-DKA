@@ -37,6 +37,7 @@ import axios from 'axios'
 import { ref, onMounted, watch } from 'vue'
 import EmpresaForm from './EmpresaForm.vue'
 import Buscador from "../Buscador.vue";
+import api from '@/services/api.js'
 
 const empresas = ref([])
 const mostrarModal = ref(false)
@@ -47,8 +48,8 @@ const emit = defineEmits(['seleccionarEmpresa'])
 async function cargarEmpresas() {
             cargando.value = true
 
-    const response = await axios.get(
-        'http://localhost:8000/api/empresas',
+    const response = await api.get(
+        '/api/empresas',
         {
             params: {
                 q: q.value
@@ -64,7 +65,7 @@ async function cargarEmpresas() {
 
 const crearEmpresa = async (empresa) => {
     try {
-        const response = await axios.post('http://localhost:8000/api/empresa/create', {
+        const response = await api.post('/api/empresa/create', {
             ...empresa
         })
         console.log(response.data);

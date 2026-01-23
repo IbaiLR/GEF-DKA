@@ -73,6 +73,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
+import api from '@/services/api.js'
 
 const grados = ref([])
 const gradoSeleccionado = ref('')
@@ -94,8 +95,8 @@ const tieneCompetencia = (ra, id) => {
 
 
 const cargarMatriz = async () => {
-  const { data } = await axios.get(
-    `http://localhost:8000/api/grado/${gradoSeleccionado.value}/matriz-competencias`
+  const { data } = await api.get(
+    `/api/grado/${gradoSeleccionado.value}/matriz-competencias`
   )
 
   competencias.value = data.competencias
@@ -129,7 +130,7 @@ async function toggleCompRa(asig, ra, comp) {
   ra.loadingCompId = comp.id
 
   try {
-    await axios.post('http://localhost:8000/api/compRa/create', {
+    await api.post('/api/compRa/create', {
       ID_Comp: comp.id,
       ID_Ra: ra.id,
       ID_Asignatura: asig.id
@@ -149,7 +150,7 @@ async function toggleCompRa(asig, ra, comp) {
 }
 
 onMounted(async () => {
-  const { data } = await axios.get('http://localhost:8000/api/grados')
+  const { data } = await api.get('/api/grados')
   grados.value = data.data
 })
 

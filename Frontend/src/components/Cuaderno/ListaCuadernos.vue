@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
+import api from '@/services/api.js'
 
 const props = defineProps({
   idGrado: Number
@@ -10,7 +11,7 @@ const entregas = ref([]);
 
 async function fetchEntregas() {
   try {
-    const res = await axios.get(`http://localhost:8000/api/grado/${props.idGrado}/entregas`);
+    const res = await api.get(`/api/grado/${props.idGrado}/entregas`);
     entregas.value = res.data;
   } catch (err) {
     console.error(err);

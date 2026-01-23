@@ -45,8 +45,7 @@
 
 <script setup>
 import { ref, watch, onMounted } from "vue";
-import axios from "axios";
-
+import api from '@/services/api.js'
 const props = defineProps({
   filters: Object
 });
@@ -60,8 +59,8 @@ async function fetchUsers(page = 1) {
   currentPage.value = page;
 
   try {
-    
-    const response = await axios.get("http://127.0.0.1:8000/api/users", {
+
+    const response = await api.get("/api/users", {
       params: {
         page,
         per_page: perPage.value,
@@ -69,9 +68,9 @@ async function fetchUsers(page = 1) {
         id_grado: props.filters?.id_grado
       }
     });
-    
+
     users.value = response.data.data.data || [];
-    
+
     totalPages.value = response.data.data.last_page;
   } catch (error) {
     console.error(error);

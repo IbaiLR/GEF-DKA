@@ -1,6 +1,7 @@
 <script setup>
 import { watch, ref } from 'vue'
 import axios from 'axios'
+import api from '@/services/api.js'
 
 const props = defineProps({
   alumno: Object
@@ -24,8 +25,8 @@ watch(
     const token = localStorage.getItem('token')
 
     try {
-      const resEstancia = await axios.get(
-        `http://127.0.0.1:8000/api/estancias/${nuevo.estancia_actual.id}/competencias`,
+      const resEstancia = await api.get(
+        `/api/estancias/${nuevo.estancia_actual.id}/competencias`,
         {
           params: {
             ID_Alumno: nuevo.ID_Usuario
@@ -36,11 +37,11 @@ watch(
 
       competencias.value = resEstancia.data.competencias.map(c => ({
         ...c,
-        nota: c.notas?.[0]?.Nota ?? null 
+        nota: c.notas?.[0]?.Nota ?? null
       }));
 
-      const resGrados = await axios.get(
-        `http://127.0.0.1:8000/api/grados/${nuevo.grado.id}/competencias`,
+      const resGrados = await api.get(
+        `/api/grados/${nuevo.grado.id}/competencias`,
         { headers: { Authorization: `Bearer ${token}` } }
       )
 
@@ -72,8 +73,8 @@ const agregarCompetencia = async () => {
 
   const competenciaId = competenciaSeleccionada.value
   try {
-    const res = await axios.post(
-      `http://127.0.0.1:8000/api/estancias/${props.alumno.estancia_actual.id}/competencias`,
+    const res = await api.post(
+      `/api/estancias/${props.alumno.estancia_actual.id}/competencias`,
       { ID_Comp: competenciaId },
       { headers: { Authorization: `Bearer ${token}` } }
     )
@@ -100,8 +101,8 @@ const agregarCompetencia = async () => {
 const actualizarNota = async (competencia) => {
   const token = localStorage.getItem('token')
   try {
-    await axios.put(
-      `http://127.0.0.1:8000/api/alumnos/${props.alumno.ID_Usuario}/competencias/${competencia.id}/nota`,
+    await api.put(
+      `/api/alumnos/${props.alumno.ID_Usuario}/competencias/${competencia.id}/nota`,
       { nota: competencia.nota },
       { headers: { Authorization: `Bearer ${token}` } }
     )
@@ -116,14 +117,14 @@ const eliminarCompetencia = async (competencia) => {
   const token = localStorage.getItem('token');
 
   try {
-    await axios.delete(
-      `http://127.0.0.1:8000/api/estancias/${props.alumno.estancia_actual.id}/competencias/${competencia.id}`,
+    await api.delete(
+      `/api/estancias/${props.alumno.estancia_actual.id}/competencias/${competencia.id}`,
       { headers: { Authorization: `Bearer ${token}` } }
     );
 
     competencias.value = competencias.value.filter(c => c.id !== competencia.id);
     competenciasDisponibles.value.push(competencia);
-    
+
   } catch (e) {
     console.error('Error eliminando competencia', e);
   }

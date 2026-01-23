@@ -4,6 +4,7 @@ import axios from 'axios';
 import FormularioCrear from '@/components/FormularioCrear.vue';
 import AsignaturaRas from './AsignaturaRas.vue';
 import ConfirmarEliminar from '../ConfirmarEliminar.vue'; // <--- IMPORTAMOS
+import api from '@/services/api.js'
 
 const props = defineProps({ grado: Object });
 const asignaturas = ref([]);
@@ -22,9 +23,9 @@ const fetchAsignaturas = async () => {
     loading.value = true;
     asignaturaExpandida.value = null;
     try {
-        const res = await axios.get(`http://127.0.0.1:8000/api/grados/${props.grado.id}/asignaturas`);
+        const res = await api.get(`/api/grados/${props.grado.id}/asignaturas`);
         asignaturas.value = res.data;
-    } catch (e) { console.error(e); } 
+    } catch (e) { console.error(e); }
     finally { loading.value = false; }
 };
 
@@ -59,7 +60,7 @@ function confirmarEliminarAsig(confirmado) {
 
 async function eliminarAsignatura(id){
     try{
-        await axios.delete(`http://127.0.0.1:8000/api/asignaturas/${id}`);
+        await api.delete(`/api/asignaturas/${id}`);
         fetchAsignaturas();
     } catch (e){
         alert('Error al eliminar');
@@ -75,8 +76,8 @@ async function eliminarAsignatura(id){
                 <span>Asignaturas de {{ grado.nombre }}</span>
             </div>
             <div>
-                <button 
-                    class="btn btn-sm btn-outline-light d-flex align-items-center gap-1" 
+                <button
+                    class="btn btn-sm btn-outline-light d-flex align-items-center gap-1"
                     @click="mostrarForm = !mostrarForm"
                 >
                     <i :class="mostrarForm ? 'bi bi-dash-lg' : 'bi bi-plus-lg'"></i>
@@ -87,7 +88,7 @@ async function eliminarAsignatura(id){
 
         <div class="card-body p-0">
             <div v-if="loading && !asignaturas.length" class="p-4 text-center">Cargando...</div>
-            
+
             <table v-else class="table table-hover table-sm mb-0 align-middle" style="font-size: 0.9rem;">
                 <thead class="table-light">
                     <tr>
@@ -98,13 +99,13 @@ async function eliminarAsignatura(id){
                 </thead>
                 <tbody>
                     <template v-for="(asig, index) in asignaturas" :key="asig.id">
-                        
+
                         <tr :class="{'table-active': asignaturaExpandida === asig.id}">
                             <td class="text-center fw-bold text-secondary">{{ index + 1 }}</td>
                             <td class="py-2">{{ asig.nombre }}</td>
-                            <td class="d-flex justify-content-end gap-2 pe-2"> 
-                                <button 
-                                    class="btn btn-sm " 
+                            <td class="d-flex justify-content-end gap-2 pe-2">
+                                <button
+                                    class="btn btn-sm "
                                     :class="asignaturaExpandida === asig.id ? 'btn-indigo text-white' : 'btn-outline-indigo'"
                                     @click="toggleRas(asig.id)"
                                     title="Ver Resultados de Aprendizaje"
@@ -132,7 +133,7 @@ async function eliminarAsignatura(id){
             </table>
         </div>
 
-        <FormularioCrear 
+        <FormularioCrear
             v-if="mostrarForm"
             endpoint="http://127.0.0.1:8000/api/asignaturas"
             tipo="asig"
@@ -141,10 +142,10 @@ async function eliminarAsignatura(id){
             @creado="onCreado"
         />
 
-        <ConfirmarEliminar 
-            :show="eliminarModalVisible" 
+        <ConfirmarEliminar
+            :show="eliminarModalVisible"
             :mensaje="`¿Seguro que quieres eliminar la asignatura '${asigEliminar?.nombre}'? Esto borrará también sus RAs.`"
-            @confirm="confirmarEliminarAsig" 
+            @confirm="confirmarEliminarAsig"
             @close="eliminarModalVisible = false"
         />
     </div>

@@ -1,6 +1,7 @@
 <script setup>
 import { ref, watch } from 'vue'
 import axios from 'axios'
+import api from '@/services/api.js'
 
 const props = defineProps({
   egibide: Array,
@@ -22,8 +23,8 @@ watch(
 async function guardarNota(nota) {
   try {
     const token = localStorage.getItem('token')
-    await axios.post(
-      `http://localhost:8000/api/alumnos/${props.alumnoId}/nota-egibide`,
+    await api.post(
+      `/api/alumnos/${props.alumnoId}/nota-egibide`,
       { id: nota.id, nota: nota.nota },
       { headers: { Authorization: `Bearer ${token}` } }
     )

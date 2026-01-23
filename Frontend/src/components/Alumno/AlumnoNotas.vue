@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import { useUserStore } from '@/stores/userStore'
+import api from '@/services/api.js'
 
 import CuardernosTable from '../Notas/CuardernosTable.vue'
 import CompetenciasTable from '../Notas/CompetenciasTable.vue'
@@ -16,7 +17,7 @@ const id = userStore.user?.id
 async function cargarNotas() {
   try {
     const token = localStorage.getItem('token')
-    const res = await axios.get(`http://localhost:8000/api/alumno/${id}/mis-notas`, {
+    const res = await api.get(`/api/alumno/${id}/mis-notas`, {
       headers: { Authorization: `Bearer ${token}` }
     })
     notas.value = res.data || null

@@ -8,7 +8,7 @@ import AlumnosTutorView from '@/views/tutor/AlumnosTutorView.vue'
 import SeguimientoView from '@/views/tutor/SeguimientoView.vue'
 import EmpresaView from '../views/admin/EmpresaView.vue'
 import EstanciaAlumnoView from '../views/alumno/EstanciaAlumnoView.vue'
-
+import MiGradoView from '@/views/tutor/MiGradoView.vue'
 import AlumnoCuadernosView from '@/views/cuadernos/AlumnoCuadernosView.vue';
 import TutorCuadernosView from '@/views/cuadernos/TutorCuadernosView.vue';
 
@@ -95,7 +95,12 @@ const router = createRouter({
       path: "/competenciasXra",
       name: "compra",
       component: CompRaView
-    }
+    },
+    {
+    path: "/mi-grado",
+    name: "miGrado",
+    component: MiGradoView
+  }
 
   ],
 })

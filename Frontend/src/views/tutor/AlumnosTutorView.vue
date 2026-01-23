@@ -17,7 +17,7 @@ const tutorId = route.params.id;
 
   <div class="container-fluid">
     <div class="row">
-      <AlumnosList @seleccionarAlumno="alumnoSeleccionado = $event" :endpoint="`http://localhost:8000/api/tutores/${tutorId}/alumnos`" />
+      <AlumnosList @seleccionarAlumno="alumnoSeleccionado = $event" :endpoint="`/api/tutores/${tutorId}/alumnos`" />
       <AlumnoDatos :alumno="alumnoSeleccionado" />
     </div>
   </div>

@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed } from 'vue';
 import axios from 'axios';
+import api from '@/services/api.js'
 
 const props = defineProps({
     endpoint: { type: String, required: true }, // URL completa de la API
@@ -20,14 +21,14 @@ const config = computed(() => {
             return {
                 placeholder: 'Escribe el nombre de la asignatura...',
                 btnClass: 'btn-indigo',
-                payloadKey: 'nombre',     
-                fkKey: 'ID_Grado'         
+                payloadKey: 'nombre',
+                fkKey: 'ID_Grado'
             };
         case 'comp':
             return {
                 placeholder: 'Escribe la descripción de la competencia...',
                 btnClass: 'btn-success',
-                payloadKey: 'descripcion', 
+                payloadKey: 'descripcion',
                 fkKey: 'ID_Grado'
             };
         case 'ra':
@@ -49,16 +50,16 @@ const guardar = async () => {
     error.value = null;
 
     try {
-        
+
         const payload = {
-            [config.value.payloadKey]: texto.value, 
-            [config.value.fkKey]: props.idPadre     
+            [config.value.payloadKey]: texto.value,
+            [config.value.fkKey]: props.idPadre
         };
-        
-        await axios.post(props.endpoint, payload);
-        
+
+        await api.post(props.endpoint, payload);
+
         texto.value = "";
-        emit('creado'); 
+        emit('creado');
     } catch (e) {
         console.error(e);
         error.value = "Error al guardar. Verifica los datos.";
@@ -74,19 +75,19 @@ const guardar = async () => {
             <label class="form-label fw-bold small text-muted mb-0">
                 <i class="bi bi-plus-circle me-1"></i> Añadir nuevo registro
             </label>
-            
+
             <div class="d-flex gap-2">
-                <input 
-                    type="text" 
-                    class="form-control" 
+                <input
+                    type="text"
+                    class="form-control"
                     :placeholder="config.placeholder"
                     v-model="texto"
                     @keyup.enter="guardar"
                     autofocus
                 >
-                
-                <button 
-                    class="btn text-white" 
+
+                <button
+                    class="btn text-white"
                     :class="config.btnClass"
                     @click="guardar"
                     :disabled="loading || !texto"
@@ -99,7 +100,7 @@ const guardar = async () => {
                     <i class="bi bi-x-lg"></i>
                 </button>
             </div>
-            
+
             <div v-if="error" class="text-danger small">{{ error }}</div>
         </div>
     </div>

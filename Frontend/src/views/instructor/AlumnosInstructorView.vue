@@ -19,7 +19,7 @@ const alumnoSeleccionado = ref(null)
       <!-- Izquierda -->
       <AlumnosList
         class="col-md-3"
-        :endpoint="`http://127.0.0.1:8000/api/instructores/${instructorId}/alumnos`"
+        :endpoint="`/api/instructores/${instructorId}/alumnos`"
         @seleccionarAlumno="alumnoSeleccionado = $event"
       />
 

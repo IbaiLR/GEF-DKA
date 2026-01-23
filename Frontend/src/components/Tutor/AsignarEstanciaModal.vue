@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted, watch, defineProps, defineEmits } from 'vue'
 import axios from 'axios'
+import api from '@/services/api.js'
 
 const props = defineProps({
   show: Boolean,
@@ -47,7 +48,7 @@ function resetHorarios(){
 
 onMounted(async () => {
   const token = localStorage.getItem('token')
-  const res = await axios.get('http://localhost:8000/api/empresas', {
+  const res = await api.get('/api/empresas', {
     headers:{ Authorization:`Bearer ${token}` }
   })
   empresas.value = res.data || []
@@ -68,7 +69,7 @@ watch(() => props.show, val => {
 watch(() => nuevaEstancia.value.CIF_Empresa, async cif => {
   if(!cif) return
   const token = localStorage.getItem('token')
-  const res = await axios.get(`http://localhost:8000/api/empresa/${cif}/instructores`, {
+  const res = await api.get(`/api/empresa/${cif}/instructores`, {
     headers:{ Authorization:`Bearer ${token}` }
   })
   instructores.value = res.data || []
@@ -101,8 +102,8 @@ async function crearEstancia(){
 
   try {
     const token = localStorage.getItem('token')
-    const res = await axios.post(
-      'http://localhost:8000/api/asignarEstancia',
+    const res = await api.post(
+      '/api/asignarEstancia',
       payload,
       { headers:{ Authorization:`Bearer ${token}` } }
     )
@@ -145,7 +146,7 @@ function cerrarModal(){
       </h5>
       <button type="button" class="btn-close" @click="cerrarModal"></button>
     </div>
-    
+
     <!-- BODY -->
     <div class="card-body">
 
