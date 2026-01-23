@@ -11,7 +11,8 @@ class EstanciaAlumno extends Model
         'ID_Alumno',
         'CIF_Empresa',
         'Fecha_inicio',
-        'Fecha_fin'
+        'Fecha_fin',
+        'Horas_totales'
     ];
 
     public function horario()

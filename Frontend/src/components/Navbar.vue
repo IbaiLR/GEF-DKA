@@ -96,6 +96,11 @@
                       Cuadernos
                     </RouterLink>
                   </li>
+                  <li v-if="usuario.es_tutor"> 
+                   <hr class="dropdown-divider"> <RouterLink class="dropdown-item fw-bold text-indigo" to="/mi-grado">
+                     <i class="bi bi-mortarboard-fill me-1"></i> Mi Grado
+                   </RouterLink>
+                </li>
               </ul>
             </li>
 

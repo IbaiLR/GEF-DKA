@@ -5,9 +5,29 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
+
+private function checkEsTutor($user) {
+        // Solo hacemos la comprobación si el usuario es de tipo 'tutor'
+        if ($user->tipo === 'tutor') {
+            
+            // CORRECCIÓN: Buscamos en la tabla 'grado' por la columna 'ID_Tutor'
+            $existe = DB::table('grado')
+                        ->where('id_tutor', $user->id) 
+                        ->exists(); // Devuelve true si encuentra al menos uno
+            
+            // Añadimos la propiedad al objeto usuario para el frontend
+            $user->es_tutor = $existe;
+        } else {
+            // Si no es tutor (es alumno, admin, etc), por defecto false (o lo que prefieras)
+            $user->es_tutor = false;
+        }
+        return $user;
+    }
+
     public function auth(Request $req)
     {
         $userAuth = $req->user();
@@ -17,7 +37,7 @@ class UserController extends Controller
                 'message' => 'No autenticado'
             ], 401);
         }
-
+    $userAuth = $this->checkEsTutor($userAuth);
         return response()->json([
             'status' => 'success',
             'message' => 'Autenticado',
@@ -46,6 +66,8 @@ class UserController extends Controller
         $user = Auth::user();
         $user->tokens()->delete();
         $token = $user->createToken('auth_token')->plainTextToken;
+
+        $user = $this->checkEsTutor($user);
 
         return response()->json([
             'status' => 'success',
