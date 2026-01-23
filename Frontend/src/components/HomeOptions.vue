@@ -11,6 +11,8 @@ const isTutor = computed(() => usuario.value?.tipo === 'tutor');
 const isInstructor = computed(() => usuario.value?.tipo === 'instructor');
 const isAlumno = computed(() => usuario.value?.tipo === 'alumno');
 
+const isTutorGrado = computed(() => usuario.value?.es_tutor === true); // Si es tutor de un grado
+
 const claseRol = (tipo) => {
   return {
     admin: 'bg-primary',
@@ -100,6 +102,9 @@ const claseRol = (tipo) => {
               alt="Gestión de Cuadernos">
           </div>
         </RouterLink>
+      </div>
+      <div v-if="isTutorGrado">
+        
       </div>
 
     </div>

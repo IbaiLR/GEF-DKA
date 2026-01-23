@@ -12,6 +12,7 @@ return new class extends Migration {
             $table->string('CIF_Empresa',15);
             $table->date('Fecha_inicio');
             $table->date('Fecha_fin')->nullable();
+            $table->integer('Horas_totales')->nullable();
             $table->timestamps();
 
             $table->foreign('ID_Alumno')

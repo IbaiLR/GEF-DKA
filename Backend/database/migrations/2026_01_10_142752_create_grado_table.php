@@ -12,8 +12,8 @@ return new class extends Migration {
             $table->string('curso', 50)->nullable();
                         $table->timestamps();
 
-            $table->unsignedBigInteger('id_tutor')->nullable();
-            $table->foreign('id_tutor')
+            $table->unsignedBigInteger('ID_Tutor')->nullable();
+            $table->foreign('ID_Tutor')
                 ->references('id_usuario')->on('tutor')
                 ->nullOnDelete();
         });

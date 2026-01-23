@@ -48,6 +48,8 @@ Route::post('/empresa/create', [EmpresaController::class, 'create']);
 */
 Route::get('/empresa/{cif}/instructores', [InstructorController::class, 'getCompanyInstructor']);
 Route::post('/empresa/instructor/create', [InstructorController::class, 'crearInstructor']);
+Route::get('/instructores/{id}/alumnos', [AlumnoController::class, 'alumnosDeInstructor'])->middleware('auth:sanctum');
+
 
 /*
 |--------------------------------------------------------------------------
@@ -55,8 +57,6 @@ Route::post('/empresa/instructor/create', [InstructorController::class, 'crearIn
 |--------------------------------------------------------------------------
 */
 Route::get('/tutores/{id}/alumnos', [AlumnoController::class, 'alumnosDeTutor'])->middleware('auth:sanctum');
-Route::get('/instructores/{id}/alumnos', [AlumnoController::class, 'alumnosDeInstructor'])->middleware('auth:sanctum');
-
 Route::get('/tutor/alumno/{id}/estancias', [EstanciaController::class, 'historialEstanciasAlumno']); // Tutor
 Route::get('/alumno/{id}/estancia', [EstanciaController::class, 'getEstanciaActual']); // Alumno
 Route::get('/empresa/{cif}/alumnos', [EstanciaController::class, 'getCompanyAlumnos']);
@@ -130,7 +130,7 @@ Route::get('/grados', [GradoController::class, 'getGrados']);
 Route::get('/grados/{id}/asignaturas', [GradoController::class, 'getAsignaturas']);
 Route::get('/grados/{id}/competencias', [GradoController::class, 'getCompetencias']);
 Route::get('/tutor/{id}/notas-cuaderno', [NotaCuadernoController::class, 'notasPorTutor']);
-
+Route::get('/mi-grado/gestion', [GradoController::class, 'getDatosGestionTutor'])->middleware('auth:sanctum');
 
 /*
 |--------------------------------------------------------------------------
