@@ -2,6 +2,7 @@
 import { ref, onMounted, reactive } from 'vue'
 import { useUserStore } from '@/stores/userStore'
 import FormEntregaModal from './FormEntregaModal.vue'
+import ConfirmarEliminar from '../ConfirmarEliminar.vue'
 import api from '@/services/api.js'
 
 const userStore = useUserStore()
@@ -10,15 +11,35 @@ const tutorId = userStore.user?.id
 const entregasPorGrado = ref([])
 const mensaje = ref('')
 
-// Modal
+// Modal crear entrega
 const crearModalVisible = ref(false)
 const gradoSeleccionado = ref(null)
+
+// Modal confirmar eliminar
+const eliminarModalVisible = ref(false)
+const entregaEliminar = ref(null)
 
 function abrirCrearEntregaModal(grado) {
   console.log('Abriendo modal para grado:', grado)
   gradoSeleccionado.value = grado
   crearModalVisible.value = true
 }
+
+// Abrir modal de confirmación para eliminar
+function abrirEliminarModal(entregaId, gradoId) {
+  entregaEliminar.value = { entregaId, gradoId }
+  eliminarModalVisible.value = true
+}
+
+// Confirmar eliminación
+function confirmarEliminar(confirmado) {
+  if (confirmado && entregaEliminar.value) {
+    eliminarEntrega(entregaEliminar.value.entregaId, entregaEliminar.value.gradoId)
+  }
+  eliminarModalVisible.value = false
+  entregaEliminar.value = null
+}
+
 // Manejar cuando se guarda una nueva entrega
 function onEntregaGuardada(nuevaEntrega) {
   console.log('Nueva entrega guardada:', nuevaEntrega)
@@ -40,6 +61,7 @@ function onEntregaGuardada(nuevaEntrega) {
   // Cerrar modal
   crearModalVisible.value = false
 }
+
 // Cargar entregas
 async function fetchEntregas() {
   if (!tutorId) return
@@ -73,25 +95,24 @@ async function guardarObservacionYFeedback(alumnoEntrega) {
       Observaciones: alumnoEntrega.Observaciones ?? '',
       Feedback: alumnoEntrega.Feedback ?? null,
     })
-    alert('Observaciones y Feedback guardados correctamente')
+    // Puedes mostrar un mensaje de éxito temporal aquí si lo deseas
+    console.log('Observaciones y Feedback guardados correctamente')
   } catch (err) {
     console.error(err)
-    alert('Error al guardar observaciones y feedback')
+    mensaje.value = 'Error al guardar observaciones y feedback'
   }
 }
 
 // Eliminar entrega
 async function eliminarEntrega(entregaId, gradoId) {
-  if (!confirm('¿Seguro que quieres eliminar esta entrega?')) return
-
   try {
     await api.delete(`/api/grado/${gradoId}/entregas/${entregaId}`)
     const bloque = entregasPorGrado.value.find(b => b.grado.id === gradoId)
     if (bloque) bloque.entregas = bloque.entregas.filter(e => e.id !== entregaId)
-    alert('Entrega eliminada correctamente')
+    console.log('Entrega eliminada correctamente')
   } catch (err) {
     console.error(err)
-    alert('Error al eliminar la entrega')
+    mensaje.value = 'Error al eliminar la entrega'
   }
 }
 
@@ -102,7 +123,10 @@ onMounted(fetchEntregas)
   <div>
     <h3>Cuadernos de Alumnos</h3>
 
-    <div v-if="mensaje" class="text-danger mb-3">{{ mensaje }}</div>
+    <div v-if="mensaje" class="alert alert-danger alert-dismissible fade show" role="alert">
+      {{ mensaje }}
+      <button type="button" class="btn-close" @click="mensaje = ''" aria-label="Close"></button>
+    </div>
 
     <div v-for="bloque in entregasPorGrado" :key="bloque.grado.id" class="mb-5">
       <div class="d-flex justify-content-between align-items-center mb-3" v-if="bloque.entregas.length">
@@ -127,7 +151,7 @@ onMounted(fetchEntregas)
               </span>
 
               <button v-if="bloque.esTutorPrincipal" class="btn btn-danger btn-sm"
-                @click="eliminarEntrega(entrega.id, bloque.grado.id)">
+                @click="abrirEliminarModal(entrega.id, bloque.grado.id)">
                 Eliminar
               </button>
             </div>
@@ -182,11 +206,18 @@ onMounted(fetchEntregas)
 
     <!-- Modal crear entrega -->
     <FormEntregaModal
-    :visible="crearModalVisible"
-    :grado="gradoSeleccionado"
-    @close="crearModalVisible = false"
-    @saved="onEntregaGuardada"
-  />
+      :visible="crearModalVisible"
+      :grado="gradoSeleccionado"
+      @close="crearModalVisible = false"
+      @saved="onEntregaGuardada"
+    />
+
+    <!-- Modal confirmar eliminar -->
+    <ConfirmarEliminar 
+      :show="eliminarModalVisible" 
+      mensaje="¿Seguro que deseas eliminar esta entrega?"
+      @confirm="confirmarEliminar" 
+      @close="eliminarModalVisible = false" 
+    />
   </div>
 </template>
-

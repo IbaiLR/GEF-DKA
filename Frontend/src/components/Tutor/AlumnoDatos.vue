@@ -3,7 +3,6 @@ import { ref, computed, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import AsignarEstanciaModal from '@/components/Tutor/AsignarEstanciaModal.vue'
 import NotasAlumno from '@/components/Tutor/NotasAlumno.vue'
-import axios from 'axios'
 import api from '@/services/api.js'
 
 const props = defineProps({
@@ -43,7 +42,7 @@ watch(
       )
 
       const data = res.data
-
+      console.log(data)
       notasAlumno.value = {
         nota_cuaderno: data?.nota_cuaderno || [],
         notas_competencias: data?.notas_competencias || [],
