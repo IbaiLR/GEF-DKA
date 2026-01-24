@@ -136,4 +136,24 @@ class EstanciaController extends Controller
 
         return response()->json($competencias);
     }
+
+    public function eliminarEstancia($id)
+    {
+        $estancia = EstanciaAlumno::findOrFail($id);
+        
+        $idAlumno = $estancia->ID_Alumno;
+        
+         $user = auth()->user();
+         if ($user->tipo !== 'admin' && $user->tipo !== 'tutor') {
+             return response()->json(['message' => 'No autorizado'], 403);
+         }
+        
+        $estancia->delete();
+        
+        Alumno::where('ID_Usuario', $idAlumno)->update(['ID_Instructor' => null]);
+        
+        return response()->json([
+            'message' => 'Estancia eliminada correctamente'
+        ]);
+    }
 }

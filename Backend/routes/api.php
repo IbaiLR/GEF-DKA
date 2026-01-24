@@ -49,6 +49,8 @@ Route::post('/empresa/create', [EmpresaController::class, 'create']);
 Route::get('/empresa/{cif}/instructores', [InstructorController::class, 'getCompanyInstructor']);
 Route::post('/empresa/instructor/create', [InstructorController::class, 'crearInstructor']);
 Route::get('/instructores/{id}/alumnos', [AlumnoController::class, 'alumnosDeInstructor'])->middleware('auth:sanctum');
+Route::put('/alumnos/{idAlumno}/asignar-instructor',[AlumnoController::class, 'asignarInstructor'])->middleware('auth:sanctum');
+
 
 
 /*
@@ -87,6 +89,7 @@ Route::get('/tutor/{id}/grados', [TutorController::class, 'grados']);
 // Para tutor
 Route::post('asignarEstancia', [EstanciaController::class, 'asignarEstancia'])->middleware('auth:sanctum');
 Route::get('/tutor/alumno/{id}/estancias', [EstanciaController::class, 'historialEstanciasAlumno']);
+Route::delete('/estancia/{id}', [EstanciaController::class, 'eliminarEstancia'])->middleware('auth:sanctum');
 // Para alumno
 Route::get('/alumno/{id}/estancia', [EstanciaController::class, 'getEstanciaActual']);
 Route::get('/empresa/{cif}/alumnos', [EstanciaController::class, 'getCompanyAlumnos']);

@@ -1,6 +1,5 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
-import axios from 'axios'
 import Buscador from '@/components/Buscador.vue'
 import { useUserStore } from '@/stores/userStore'
 import api from '@/services/api.js'

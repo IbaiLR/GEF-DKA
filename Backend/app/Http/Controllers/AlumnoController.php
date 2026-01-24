@@ -44,7 +44,8 @@ class AlumnoController extends Controller
             ->with([
                 'usuario:id,nombre,apellidos,email,tipo',
                 'grado:id,nombre',
-                'estanciaActual'
+                'estanciaActual.empresa',
+                'instructor.user'
             ])
             ->get();
 
@@ -74,7 +75,6 @@ class AlumnoController extends Controller
         return response()->json($alumnos);
     }
 
-
     public function getGrado($id)
     {
         return Alumno::with('grado')->findOrFail($id);
@@ -82,8 +82,6 @@ class AlumnoController extends Controller
 
     public function misNotas($id)
     {
-
-
         if (!$id) {
             return response()->json([
                 'alumno' => null,
@@ -102,10 +100,10 @@ class AlumnoController extends Controller
             'grado.asignaturas.notaEgibide' => function ($q) use ($id) {
                 $q->where('ID_Alumno', $id);
             },
-            'notaCuaderno'
+            'notaCuaderno',
+            'instructor.user',
+            'estanciaActual.empresa'
         ])->where('ID_Usuario', $id)->first();
-
-
 
         return response()->json($alumno);
     }
@@ -147,4 +145,28 @@ class AlumnoController extends Controller
         ]);
     }
 
+    public function asignarInstructor(Request $request, $idAlumno)
+    {
+        $user = $request->user();
+
+        // Solo tutor o admin
+        if ($user->tipo !== 'admin' && $user->tipo !== 'tutor') {
+            return response()->json(['message' => 'No autorizado'], 403);
+        }
+
+        $request->validate([
+            'ID_Instructor' => 'required|exists:users,id'
+        ]);
+
+        $alumno = Alumno::findOrFail($idAlumno);
+
+        $alumno->ID_Instructor = $request->ID_Instructor;
+        $alumno->save();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Instructor asignado correctamente',
+            'alumno' => $alumno->load(['instructor.user'])
+        ]);
+    }
 }
