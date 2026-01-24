@@ -130,6 +130,8 @@ Route::post('/alumnos/{idAlumno}/notas', [NotasEmpresaController::class, 'store'
 |--------------------------------------------------------------------------
 */
 Route::get('/grados', [GradoController::class, 'getGrados']);
+Route::post('/grados', [GradoController::class, 'crearGrado'])->middleware('auth:sanctum');
+Route::delete('/grados/{id}', [GradoController::class, 'eliminarGrado'])->middleware('auth:sanctum');
 Route::get('/grados/{id}/asignaturas', [GradoController::class, 'getAsignaturas']);
 Route::get('/grados/{id}/competencias', [GradoController::class, 'getCompetencias']);
 Route::get('/tutor/{id}/notas-cuaderno', [NotaCuadernoController::class, 'notasPorTutor']);

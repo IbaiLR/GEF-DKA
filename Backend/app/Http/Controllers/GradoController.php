@@ -11,14 +11,12 @@ use Illuminate\Support\Facades\DB;
 
 class GradoController extends Controller
 {
-protected $notasService;
+    protected $notasService;
 
     public function __construct(NotasAlumnoService $notasService)
     {
         $this->notasService = $notasService;
     }
-
-
 
     public function getGrados(Request $request)
     {
@@ -41,6 +39,55 @@ protected $notasService;
 
         return response()->json($grados);
     }
+
+    /**
+     * Crear un nuevo grado
+     */
+    public function crearGrado(Request $request)
+    {
+        $request->validate([
+            'nombre' => 'required|string|max:150',
+            'curso' => 'nullable|string|max:50'
+        ], [
+            'nombre.required' => 'El nombre del grado es obligatorio',
+            'nombre.max' => 'El nombre no puede superar los 150 caracteres',
+            'curso.max' => 'El curso no puede superar los 50 caracteres'
+        ]);
+
+        $grado = Grado::create([
+            'Nombre' => $request->nombre,
+            'Curso' => $request->curso
+        ]);
+
+        return response()->json([
+            'message' => 'Grado creado correctamente',
+            'grado' => $grado
+        ], 201);
+    }
+
+    /**
+     * Eliminar un grado
+     */
+    public function eliminarGrado($id)
+    {
+        $grado = Grado::findOrFail($id);
+        
+        // Verificar si tiene alumnos asignados
+        $alumnosCount = $grado->alumnos()->count();
+        
+        if ($alumnosCount > 0) {
+            return response()->json([
+                'message' => "No se puede eliminar el grado porque tiene {$alumnosCount} alumno(s) asignado(s)"
+            ], 422);
+        }
+        
+        $grado->delete();
+        
+        return response()->json([
+            'message' => 'Grado eliminado correctamente'
+        ]);
+    }
+
     // Obtener asignaturas simples
     public function getAsignaturas($id)
     {
@@ -64,7 +111,7 @@ protected $notasService;
         return response()->json($competencias);
     }
 
-  public function getDatosGestionTutor(Request $request)
+    public function getDatosGestionTutor(Request $request)
     {
         $user = $request->user();
 

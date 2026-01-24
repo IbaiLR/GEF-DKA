@@ -23,4 +23,7 @@ class Grado extends Model
     public function competencias(){
         return $this->hasMany(Competencia::class, 'ID_Grado');
     }
+    public function alumnos(){
+        return $this->hasMany(Alumno::class, 'ID_Grado', 'id');
+    }
 } 

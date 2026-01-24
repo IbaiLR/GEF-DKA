@@ -2,9 +2,9 @@
 import { ref, onMounted, defineEmits } from "vue";
 import axios from "axios";
 import Buscador from "../Buscador.vue";
+import CrearGradoModal from "./CrearGradoModal.vue";
+import ConfirmarEliminar from "../ConfirmarEliminar.vue";
 import api from '@/services/api.js'
-
-// import GradoForm from './GradoForm.vue';
 
 // AÑADIMOS LOS NUEVOS EVENTOS AL EMIT
 const emit = defineEmits(['verAsignaturas', 'verCompetencias']);
@@ -15,6 +15,8 @@ const currentPage = ref(1);
 const totalPages = ref(1);
 const loading = ref(false);
 const mostrarModal = ref(false);
+const eliminarModal = ref(false);
+const gradoEliminar = ref(null);
 
 const searchQuery = ref("");
 let searchTimeout = null;
@@ -49,10 +51,43 @@ const fetchGrados = async (page = 1) => {
   }
 };
 
-const crearGrado = async (grado) => {
-    console.log("Crear grado", grado);
+const crearGrado = async (nuevoGrado) => {
+    console.log("Grado creado:", nuevoGrado);
     mostrarModal.value = false;
-    fetchGrados(1);
+    fetchGrados(currentPage.value); // Recargar la página actual
+}
+
+function abrirEliminarModal(grado) {
+  gradoEliminar.value = grado;
+  eliminarModal.value = true;
+}
+
+async function confirmarEliminar(confirmado) {
+  if (confirmado && gradoEliminar.value) {
+    await eliminarGrado(gradoEliminar.value.id);
+  }
+  eliminarModal.value = false;
+  gradoEliminar.value = null;
+}
+
+async function eliminarGrado(id) {
+  try {
+    const token = localStorage.getItem('token');
+    await api.delete(`/api/grados/${id}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    
+    console.log('Grado eliminado correctamente');
+    
+    // Limpiar la selección si el grado eliminado era el seleccionado
+    emit('verAsignaturas', null);
+    emit('verCompetencias', null);
+    
+    fetchGrados(currentPage.value); // Recargar la página actual
+  } catch (err) {
+    console.error('Error al eliminar grado:', err);
+    alert(err.response?.data?.message || 'Error al eliminar el grado');
+  }
 }
 
 onMounted(() => {
@@ -65,8 +100,8 @@ onMounted(() => {
 
     <Buscador tipo="Buscar grado..." @search="onSearch" />
 
-     <button class="btn btn-secondary mb-2" @click="mostrarModal = true">
-        <i class="bi bi-building-fill-add"></i> Añadir
+    <button class="btn btn-secondary mb-2" @click="mostrarModal = true">
+        <i class="bi bi-building-fill-add"></i> Añadir Grado
     </button>
 
     <div v-if="!loading" class="list-group shadow-sm">
@@ -77,12 +112,21 @@ onMounted(() => {
 
         <div v-for="grado in grados" :key="grado.id"
             class="list-group-item list-group-item-action flex-column align-items-start p-3"
-            style="cursor: pointer;"
-           >
+            style="cursor: pointer;">
 
             <div class="d-flex w-100 justify-content-between mb-2">
                 <h5 class="mb-1 text-break">{{ grado.nombre }}</h5>
-                <small class="badge bg-secondary align-self-start">{{ grado.curso }}</small>
+                <div class="d-flex gap-2 align-items-start">
+                    <small class="badge bg-secondary">{{ grado.curso }}</small>
+                    <button 
+                        class="btn btn-sm btn-danger p-1" 
+                        style="line-height: 1;"
+                        @click.stop="abrirEliminarModal(grado)"
+                        title="Eliminar grado"
+                    >
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
             </div>
 
             <div class="d-flex gap-2 w-100 mt-2">
@@ -127,6 +171,20 @@ onMounted(() => {
         </li>
       </ul>
     </nav>
+
+    <!-- Modales -->
+    <CrearGradoModal
+      :show="mostrarModal"
+      @close="mostrarModal = false"
+      @created="crearGrado"
+    />
+
+    <ConfirmarEliminar
+      :show="eliminarModal"
+      mensaje="¿Seguro que deseas eliminar este grado? Esta acción también eliminará todas las asignaturas, alumnos y datos relacionados."
+      @confirm="confirmarEliminar"
+      @close="eliminarModal = false"
+    />
 
   </div>
 </template>
