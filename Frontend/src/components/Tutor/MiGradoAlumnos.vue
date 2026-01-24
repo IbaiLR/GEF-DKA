@@ -82,21 +82,21 @@ const obtenerEstadoAlumno = (alumno) => {
   if (errores.length === 0) {
     return { 
       tipo: 'completo', 
-      mensaje: `✓ Todas las asignaturas calculadas (${totalAsignaturas}/${totalAsignaturas})`, 
+      mensaje: `Todas las asignaturas calculadas (${totalAsignaturas}/${totalAsignaturas})`, 
       icono: 'bi-check-circle-fill',
       errores: []
     };
   } else if (asignaturasCompletas > 0) {
     return { 
       tipo: 'parcial', 
-      mensaje: `⚠ Calculadas: ${asignaturasCompletas}/${totalAsignaturas}`, 
+      mensaje: `Calculadas: ${asignaturasCompletas}/${totalAsignaturas}`, 
       icono: 'bi-exclamation-triangle-fill',
       errores: errores
     };
   } else {
     return { 
       tipo: 'incompleto', 
-      mensaje: `✗ Ninguna asignatura calculada`, 
+      mensaje: `Ninguna asignatura calculada`, 
       icono: 'bi-x-circle-fill',
       errores: errores
     };
