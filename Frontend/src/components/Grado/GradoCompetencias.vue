@@ -63,7 +63,7 @@ async function eliminarCompetencia(id) {
 </script>
 
 <template>
-  <div class="card shadow-sm border-0 w-75 m-l-5">
+  <div class="card shadow-sm border-0 m-l-5">
     <div
       class="card-header bg-success text-white fw-bold d-flex justify-content-between"
     >
