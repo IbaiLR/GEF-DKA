@@ -51,7 +51,9 @@ onMounted(async () => {
   const res = await api.get('/api/empresas', {
     headers:{ Authorization:`Bearer ${token}` }
   })
-  empresas.value = res.data || []
+  empresas.value = res.data.data || []
+  console.log(empresas.value);
+  
 })
 
 watch(() => props.show, val => {
